@@ -55,6 +55,7 @@ if ($data === null) {
                                         <th>Total Masuk</th>
                                         <th>Total Keluar</th>
                                         <th>Total Akhir</th>
+                                        <th>Detail</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -75,6 +76,17 @@ if ($data === null) {
                                                 <td><?= $totalmasuk ?></td>
                                                 <td><?= $totalkeluar ?></td>
                                                 <td><?= $totalakhir ?></td>
+                                                <td>
+
+                                                    <button type="button" class="btn btn-success" id="detailModal"
+                                                        data-bs-toggle="modal" data-bs-target="#detailMaterialMasuk"
+                                                        data-idstokbarang="<?= $idstokmaterial ?>">+</button>
+
+
+                                                    <button type="button" class="btn btn-danger" id="detailModal"
+                                                        data-bs-toggle="modal" data-bs-target="#detailMaterialKeluar"
+                                                        data-idstokbarang="<?= $idstokmaterial ?>">-</button>
+                                                </td>
                                             </tr>
                                     <?php
                                         }
@@ -91,12 +103,12 @@ if ($data === null) {
     </div>
 </div>
 
-<!-- Detail Modal -->
-<div class="modal fade" id="detailModalstokmaterial" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- Detail Modal Material Masuk -->
+<div class="modal fade" id="detailMaterialMasuk" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Detail Data stokmaterial</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Detail Masuk Material</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -104,14 +116,14 @@ if ($data === null) {
                     <thead>
                         <tr>
                             <th>Nomor</th>
-                            <th>Nama</th>
+                            <th>Nama Supplier</th>
+                            <th>Tanggal</th>
                             <th>Jumlah</th>
-                            <th>Satuan</th>
                             <th>Harga Satuan</th>
                             <th>Sub Total</th>
                         </tr>
                     </thead>
-                    <tbody id="detail_data_pengeluaran">
+                    <tbody id="detail_material_masuk">
                         <!-- Data akan diisi oleh AJAX -->
                     </tbody>
                 </table>
@@ -119,6 +131,36 @@ if ($data === null) {
         </div>
     </div>
 </div>
+
+<!-- Detail Modal Material Masuk -->
+<div class="modal fade" id="detailMaterialKeluar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Detail Pengambilan Bahan Material</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Nomor</th>
+                            <th>Nama Pekerja</th>
+                            <th>Tanggal Pengambilan</th>
+                            <th>Jumlah Diambil</th>
+                            <th>Estimasi Tanggal Jadi</th>
+                            <th>Target Jadi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detail_material_keluar">
+                        <!-- Data akan diisi oleh AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
     $(document).ready(function() {
@@ -155,33 +197,82 @@ if ($data === null) {
         });
 
         $(document).on('click', '#detailModal', function() {
-            var varidPengeluaran = $(this).data('idpkrja');
+            var idBahanMaterial = $(this).data('idstokbarang');
 
-            // Mengambil detail transaksi berdasarkan ID
+            // Mengambil detail bahan material berdasarkan ID
             $.ajax({
-                url: 'webservice/api/detailpengeluaran.php',
+                url: 'webservice/api/detailmaterialmasuk.php',
                 type: 'GET',
                 data: {
-                    id: varidPengeluaran
+                    id: idBahanMaterial
                 },
                 success: function(response) {
                     var data = JSON.parse(response);
                     var rows = '';
-                    data.forEach(function(item, index) {
-                        rows += `
-                            <tr>
-                                <td>${index + 1}</td>
-                                <td>${item.nama}</td>
-                                <td>${item.jumlah}</td>
-                                <td>${item.nama_satuan}</td>
-                                <td>${item.harga_satuan}</td>
-                                <td>${item.sub_total}</td>
-                            </tr>
-                        `;
-                    });
-                    $('#detail_data_pengeluaran').html(rows);
+
+                    if (data.length > 0) {
+                        data.forEach(function(item, index) {
+                            rows += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${item.nama_supplier}</td>
+                            <td>${item.tanggal_masuk}</td>
+                            <td>${item.jumlah}</td>
+                            <td>${item.harga_satuan}</td>
+                            <td>${item.sub_total}</td>
+                        </tr>
+                    `;
+                        });
+                    } else {
+                        rows = `<tr><td colspan="5" class="text-center">Tidak ada data detail.</td></tr>`;
+                    }
+
+                    $('#detail_material_masuk').html(rows);
+                },
+                error: function() {
+                    $('#detail_material_masuk').html('<tr><td colspan="5" class="text-center">Error saat mengambil data.</td></tr>');
                 }
             });
         });
+
+        $(document).on('click', '#detailModal', function() {
+            var idBahanMaterial = $(this).data('idstokbarang');
+
+            // Mengambil detail bahan material berdasarkan ID
+            $.ajax({
+                url: 'webservice/api/detailmaterialkeluar.php',
+                type: 'GET',
+                data: {
+                    id: idBahanMaterial
+                },
+                success: function(response) {
+                    var data = JSON.parse(response);
+                    var rows = '';
+
+                    if (data.length > 0) {
+                        data.forEach(function(item, index) {
+                            rows += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${item.nama_pekerja}</td>
+                            <td>${item.tanggal_pengambilan}</td>
+                            <td>${item.jumlah}</td>
+                            <td>${item.estimasi_tanggal_selesai}</td>
+                            <td>${item.target_jumlah}</td>
+                        </tr>
+                    `;
+                        });
+                    } else {
+                        rows = `<tr><td colspan="5" class="text-center">Tidak ada data detail.</td></tr>`;
+                    }
+
+                    $('#detail_material_keluar').html(rows);
+                },
+                error: function() {
+                    $('#detail_material_keluar').html('<tr><td colspan="5" class="text-center">Error saat mengambil data.</td></tr>');
+                }
+            });
+        });
+
     });
 </script>

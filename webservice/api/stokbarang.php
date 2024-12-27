@@ -2,17 +2,15 @@
 include "../config.php";
 
 $hasil = mysqli_query($koneksi, "SELECT 
-    d.id_barang_jadi AS 'id_barang_jadi',
-    b.nama_barang AS 'nama_barang_jadi',
-    SUM(d.jumlah) AS 'total'
+    tp.*, 
+    ms.nama_pekerja, 
+    ma.nama_akun
 FROM 
-    detail_barang_jadi_masuk d
-JOIN 
-    transaksi_barang_jadi_masuk t ON d.id_barang_masuk = t.id_barang_masuk
-JOIN 
-    master_barang_jadi b ON d.id_barang_jadi = b.id_barang_jadi
-GROUP BY 
-    d.id_barang_jadi, b.nama_barang;");
+    transaksi_barang_jadi_masuk tp
+LEFT JOIN 
+    master_pekerja ms ON ms.id_pekerja = tp.id_pekerja
+LEFT JOIN 
+    master_akun ma ON ma.id_akun = tp.id_akun;");
 
 $jsonRespon = array();
 if (mysqli_num_rows($hasil) > 0) {

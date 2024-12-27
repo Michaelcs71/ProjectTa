@@ -56,24 +56,27 @@
                     <label class="form-label"><strong>Detail Barang</strong></label>
                     <div id="formBarangJadiMasuk">
                         <div class="row mb-3 barang-item">
-                            <div class="col-md-3">
-                                <select class="form-control " name="nama_barang[]" required>
+                            <div class="col-md-4">
+                                <select class="form-control nama-barang" name="nama_barang[]" required>
                                     <option selected disabled>Pilih Material</option>
                                     <?php
                                     $queryGetNama = "SELECT * FROM master_barang_jadi";
                                     $getNama = mysqli_query($koneksi, $queryGetNama);
                                     while ($nama = mysqli_fetch_assoc($getNama)) {
                                     ?>
-                                        <option value="<?= $nama['id_barang_jadi'] ?>">
+                                        <option value="<?= $nama['id_barang_jadi'] ?>"
+                                            data-harga="<?= $nama['harga_terendah'] ?>"
+                                            data-upah="<?= $nama['persentase_upah'] ?>">
                                             <?= $nama['nama_barang'] ?>
                                         </option>
-                                    <?php
-                                    }
-                                    ?>
+                                    <?php } ?>
                                 </select>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <input type="number" class="form-control jumlah-barang" name="jumlah_barang[]" placeholder="Jumlah" required>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" class="form-control subtotal" name="subtotal[]" placeholder="Subtotal" readonly>
                             </div>
                             <div class="col-md-1">
                                 <button type="button" class="btn btn-danger btn-sm hapus-barang">X</button>
@@ -82,6 +85,10 @@
                     </div>
                     <button type="button" id="tambahBarangJadiMasuk" class="btn btn-success btn-sm mb-3">+ Tambah</button>
                     <hr>
+                    <div class="mb-3">
+                        <label for="total_upah" class="form-label"><strong>Total Pembelian</strong></label>
+                        <input type="number" id="total-pembelian" class="form-control" name="total_upah" readonly>
+                    </div>
                     <!-- Tombol Simpan -->
                     <div class="mb-3 d-flex justify-content-end">
                         <button name="insert_stokbarangjadi" type="submit" class="btn btn-primary">Simpan Data</button>
@@ -95,52 +102,90 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Pastikan hanya bekerja di dalam modal ini
         const modalID = "insertModalStokBarang";
-        const tambahBarangButton = document.querySelector(`#${modalID} #tambahBarangJadiMasuk`);
         const formBarangJadiMasuk = document.querySelector(`#${modalID} #formBarangJadiMasuk`);
+        const totalPembelianInput = document.querySelector(`#${modalID} #total-pembelian`);
 
-        if (tambahBarangButton && formBarangJadiMasuk) {
-            // Tambah Baris
-            tambahBarangButton.addEventListener("click", function() {
-                const newBarangJadi = document.createElement("div");
-                newBarangJadi.classList.add("row", "mb-3", "barang-item");
-                newBarangJadi.innerHTML = `
+        // Tambah Baris Barang
+        document.querySelector(`#${modalID} #tambahBarangJadiMasuk`).addEventListener("click", function() {
+            const newBarangJadi = document.createElement("div");
+            newBarangJadi.classList.add("row", "mb-3", "barang-item");
+            newBarangJadi.innerHTML = `
+                <div class="col-md-4">
+                    <select class="form-control nama-barang" name="nama_barang[]" required>
+                        <option selected disabled>Pilih Material</option>
+                        <?php
+                        $queryGetNama = "SELECT * FROM master_barang_jadi";
+                        $getNama = mysqli_query($koneksi, $queryGetNama);
+                        while ($nama = mysqli_fetch_assoc($getNama)) {
+                        ?>
+                            <option value="<?= $nama['id_barang_jadi'] ?>" 
+                                    data-harga="<?= $nama['harga_terendah'] ?>" 
+                                    data-upah="<?= $nama['persentase_upah'] ?>">
+                                <?= $nama['nama_barang'] ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+                </div>
                 <div class="col-md-3">
-                                <select class="form-control " name="nama_barang[]" required>
-                                    <option selected disabled>Pilih Material</option>
-                                    <?php
-                                    $queryGetNama = "SELECT * FROM master_barang_jadi";
-                                    $getNama = mysqli_query($koneksi, $queryGetNama);
-                                    while ($nama = mysqli_fetch_assoc($getNama)) {
-                                    ?>
-                                        <option value="<?= $nama['id_barang_jadi'] ?>">
-                                            <?= $nama['nama_barang'] ?>
-                                        </option>
-                                    <?php
-                                    }
-                                    ?>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <input type="number" class="form-control jumlah-barang" name="jumlah_barang[]" placeholder="Jumlah" required>
-                            </div>
-                           
+                    <input type="number" class="form-control jumlah-barang" name="jumlah_barang[]" placeholder="Jumlah" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="number" class="form-control subtotal" name="subtotal[]" placeholder="Subtotal" readonly>
+                </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-danger btn-sm hapus-barang">X</button>
+                </div>
             `;
-                formBarangJadiMasuk.appendChild(newBarangJadi);
-                attachDeleteHandler(newBarangJadi);
+            formBarangJadiMasuk.appendChild(newBarangJadi);
+            attachHandlers(newBarangJadi);
+        });
+
+        // Fungsi Menghitung Subtotal dan Total
+        function calculateSubtotal(row) {
+            const selectBarang = row.querySelector(".nama-barang");
+            const jumlahInput = row.querySelector(".jumlah-barang");
+            const subtotalInput = row.querySelector(".subtotal");
+
+            const harga = parseFloat(selectBarang.options[selectBarang.selectedIndex].getAttribute("data-harga")) || 0;
+            const upah = parseFloat(selectBarang.options[selectBarang.selectedIndex].getAttribute("data-upah")) || 0;
+            const jumlah = parseFloat(jumlahInput.value) || 0;
+
+            const subtotal = jumlah * harga * (upah / 100);
+            subtotalInput.value = subtotal.toFixed(2);
+
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            let total = 0;
+            formBarangJadiMasuk.querySelectorAll(".subtotal").forEach(function(input) {
+                total += parseFloat(input.value) || 0;
+            });
+            totalPembelianInput.value = total.toFixed(2);
+        }
+
+        // Tambahkan Event Listener
+        function attachHandlers(row) {
+            const selectBarang = row.querySelector(".nama-barang");
+            const jumlahInput = row.querySelector(".jumlah-barang");
+
+            selectBarang.addEventListener("change", function() {
+                calculateSubtotal(row);
             });
 
-            // Hapus Baris
-            function attachDeleteHandler(row) {
-                const deleteButton = row.querySelector(".hapus-barang");
-                deleteButton.addEventListener("click", function() {
-                    row.remove();
-                });
-            }
+            jumlahInput.addEventListener("input", function() {
+                calculateSubtotal(row);
+            });
 
-            // Pasang Listener ke Baris Awal
-            document.querySelectorAll(`#${modalID} .barang-item`).forEach(attachDeleteHandler);
+            const deleteButton = row.querySelector(".hapus-barang");
+            deleteButton.addEventListener("click", function() {
+                row.remove();
+                calculateTotal();
+            });
         }
+
+        // Pasang Event Handler ke Baris Awal
+        formBarangJadiMasuk.querySelectorAll(".barang-item").forEach(attachHandlers);
     });
 </script>

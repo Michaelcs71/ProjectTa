@@ -38,6 +38,8 @@ if (isset($_POST['insert_bahanmaterial'])) {
 if (isset($_POST['insert_barangjadi'])) {
     $data = array(
         'nama_barang' => mysqli_real_escape_string($koneksi, $_POST['nama_barangjadi']),
+        'harga_terendah' => mysqli_real_escape_string($koneksi, $_POST['hargaterendah']),
+        'persentase_upah' => mysqli_real_escape_string($koneksi, $_POST['perupah']),
         'status' => mysqli_real_escape_string($koneksi, $_POST['status']),
         'date_created' => $time,
     );
@@ -334,7 +336,6 @@ if (isset($_POST['insert_stokmasuk'])) {
     foreach ($_POST['nama_bahan_material'] as $index => $nama_bahan_material) {
         $detailData = array(
             'id_pembelian_material' => $id_pembelian_material,
-            'id_satuan' => mysqli_real_escape_string($koneksi, $_POST['nama_satuan'][$index]),
             'id_bahan_material' => mysqli_real_escape_string($koneksi, $nama_bahan_material),
             'jumlah' => mysqli_real_escape_string($koneksi, $_POST['jumlah_barang'][$index]),
             'harga_satuan' => mysqli_real_escape_string($koneksi, $_POST['harga_barang'][$index]),
@@ -356,7 +357,7 @@ if (isset($_POST['insert_stokkeluar'])) {
         'id_pekerja' => mysqli_real_escape_string($koneksi, $_POST['nama_pekerja']),
         'id_akun' => mysqli_real_escape_string($koneksi, $_POST['nama_akun']),
         'tanggal_pengambilan' => mysqli_real_escape_string($koneksi, $_POST['tanggal_pengambilan']),
-        'estimasi_tanggal_selesai' => mysqli_real_escape_string($koneksi, $_POST['estimasi_tanggal_selesai']),
+        'estimasi_tanggal_selesai' => mysqli_real_escape_string($koneksi, $_POST['estimasi_tanggal_jadi']),
         'target_jumlah' => mysqli_real_escape_string($koneksi, $_POST['target_jumlah']),
         'date_created' => $time,
     );
@@ -371,7 +372,6 @@ if (isset($_POST['insert_stokkeluar'])) {
     foreach ($_POST['nama_bahan_material'] as $index => $nama_bahan_material) {
         $detailData = array(
             'id_penggunaan_material' => $id_penggunaan_material,
-            'id_satuan' => mysqli_real_escape_string($koneksi, $_POST['nama_satuan'][$index]),
             'id_bahan_material' => mysqli_real_escape_string($koneksi, $nama_bahan_material),
             'jumlah' => mysqli_real_escape_string($koneksi, $_POST['jumlah_barang'][$index]),
         );
@@ -391,6 +391,7 @@ if (isset($_POST['insert_stokbarangjadi'])) {
         'id_pekerja' => mysqli_real_escape_string($koneksi, $_POST['nama_pekerja']),
         'id_akun' => mysqli_real_escape_string($koneksi, $_POST['nama_akun']),
         'tanggal' => mysqli_real_escape_string($koneksi, $_POST['tanggal']),
+        'total_upah' => mysqli_real_escape_string($koneksi, $_POST['total_upah']),
         'keterangan' => mysqli_real_escape_string($koneksi, $_POST['keterangan']),
         'date_created' => $time,
     );
@@ -407,6 +408,7 @@ if (isset($_POST['insert_stokbarangjadi'])) {
             'id_barang_masuk' => $id_barang_masuk,
             'id_barang_jadi' => mysqli_real_escape_string($koneksi, $nama_barang),
             'jumlah' => mysqli_real_escape_string($koneksi, $_POST['jumlah_barang'][$index]),
+            'subtotal_upah' => mysqli_real_escape_string($koneksi, $_POST['subtotal'][$index]),
         );
 
         // Insert data ke tabel detail_pengeluaran

@@ -78,22 +78,6 @@
                             <div class="col-md-2">
                                 <input type="number" class="form-control jumlah-barang" name="jumlah_barang[]" placeholder="Jumlah" required>
                             </div>
-                            <div class="col-md-2">
-                                <select class="form-control jumlah-barang" name="nama_satuan[]" required>
-                                    <option selected disabled>Pilih Satuan</option>
-                                    <?php
-                                    $queryGetNama = "SELECT * FROM master_satuan";
-                                    $getNama = mysqli_query($koneksi, $queryGetNama);
-                                    while ($nama = mysqli_fetch_assoc($getNama)) {
-                                    ?>
-                                        <option value="<?= $nama['id_satuan'] ?>">
-                                            <?= $nama['nama_satuan'] ?>
-                                        </option>
-                                    <?php
-                                    }
-                                    ?>
-                                </select>
-                            </div>
                             <div class="col-md-1">
                                 <button type="button" class="btn btn-danger btn-sm hapus-bahan-keluar">X</button>
                             </div>
@@ -157,22 +141,6 @@
         </div>
         <div class="col-md-2">
             <input type="number" class="form-control" name="jumlah_barang[]" placeholder="Jumlah" required>
-        </div>
-        <div class="col-md-2">
-            <select class="form-control" name="nama_satuan[]" required>
-                <option selected disabled>Pilih Satuan</option>
-                <?php
-                $queryGetNama = "SELECT * FROM master_satuan";
-                $getNama = mysqli_query($koneksi, $queryGetNama);
-                while ($nama = mysqli_fetch_assoc($getNama)) {
-                ?>
-                    <option value="<?= $nama['id_satuan'] ?>">
-                        <?= $nama['nama_satuan'] ?>
-                    </option>
-                <?php
-                }
-                ?>
-            </select>
         </div>
         <div class="col-md-1">
             <button type="button" class="btn btn-danger btn-sm hapus-bahan-keluar">X</button>

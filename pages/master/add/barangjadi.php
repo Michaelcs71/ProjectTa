@@ -13,6 +13,14 @@
                                 <label for="nama_barangjadi" class="form-label">Nama Bahan Material</label>
                                 <input type="text" class="form-control" name="nama_barangjadi" id="nama_barangjadi" required>
                             </div>
+                            <div class="mb-3">
+                                <label for="nama_barangjadi" class="form-label">Harga Terendah</label>
+                                <input type="number" class="form-control" name="hargaterendah" id="hargaterendah" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="nama_barangjadi" class="form-label">Persentase Upah</label>
+                                <input type="number" class="form-control" name="perupah" id="perupah" required>
+                            </div>
                             <div class="mb-3" hidden>
                                 <label for="pengeluaran" class="form-label">Status</label>
                                 <select data-trigger class="form-select" name="status" id="status">

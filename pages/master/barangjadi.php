@@ -49,6 +49,8 @@ if ($data === null) {
                                     <tr>
                                         <th>Nomor</th>
                                         <th>Nama Barang Jadi</th>
+                                        <th>Harga Terendah</th>
+                                        <th>Persentase Upah</th>
                                         <th>Status</th>
                                         <th>Aksi</th>
                                     </tr>
@@ -61,11 +63,15 @@ if ($data === null) {
                                         foreach ($data as $j) {
                                             $idbarangjadi = $j->id_barang_jadi;
                                             $namabarangjadi = $j->nama_barang;
+                                            $hargaterendah = $j->harga_terendah;
+                                            $persentaseupah = $j->persentase_upah;
                                             $status = $j->status;
                                     ?>
                                             <tr>
                                                 <td><?= $no++ ?></td>
                                                 <td><?= $namabarangjadi ?></td>
+                                                <td><?= $hargaterendah ?></td>
+                                                <td><?= $persentaseupah ?></td>
                                                 <td><?= $status ?></td>
                                                 <td>
                                                     <button type="button" class="btn btn-primary" id="updateModal"

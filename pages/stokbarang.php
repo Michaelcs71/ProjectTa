@@ -50,8 +50,11 @@ if ($data === null) {
                                 <thead class="table-light">
                                     <tr>
                                         <th>Nomor</th>
-                                        <th>Nama Barang Jadi</th>
-                                        <th>Total </th>
+                                        <th>Nama Pekerja</th>
+                                        <th>Tanggal </th>
+                                        <th>Total Upah</th>
+                                        <th>Keterangan</th>
+                                        <th>Kode Akun</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -61,16 +64,26 @@ if ($data === null) {
                                     $no = 1;
                                     if ($data !== null) {
                                         foreach ($data as $j) {
-                                            $idstokbarang = $j->id_barang_jadi;
-                                            $namabahanmaterial = $j->nama_barang_jadi;
-                                            $totalmasuk = $j->total;
+                                            $idstokbarang = $j->id_barang_masuk;
+                                            $namapekerja = $j->nama_pekerja;
+                                            $tanggal = $j->tanggal;
+                                            $totalupah = $j->total_upah;
+                                            $keterangan = $j->keterangan;
+                                            $idakun = $j->id_akun;
+
                                     ?>
                                             <tr>
                                                 <td><?= $no++ ?></td>
-                                                <td><?= $namabahanmaterial ?></td>
-                                                <td><?= $totalmasuk ?></td>
+                                                <td><?= $namapekerja ?></td>
+                                                <td><?= $tanggal ?></td>
+                                                <td><?= $totalupah ?></td>
+                                                <td><?= $keterangan ?></td>
+                                                <td><?= $idakun ?></td>
                                                 <td>
-                                                    <button type="button" class="btn btn-success" id="updateModal">Detail</button>
+                                                    <button type="button" class="btn btn-success" id="detailModal"
+                                                        data-bs-toggle="modal" data-bs-target="#detailModalstokbarang"
+                                                        data-idstokbarang="<?= $idstokbarang ?>">Detail</button>
+
                                                     <button type="button" class="btn btn-warning" id="updateModal">Update</button>
                                                     <button type="button" class="btn btn-danger" id="updateModal">Hapus</button>
                                                 </td>
@@ -103,14 +116,12 @@ if ($data === null) {
                     <thead>
                         <tr>
                             <th>Nomor</th>
-                            <th>Nama</th>
+                            <th>Nama Barang</th>
                             <th>Jumlah</th>
-                            <th>Satuan</th>
-                            <th>Harga Satuan</th>
                             <th>Sub Total</th>
                         </tr>
                     </thead>
-                    <tbody id="detail_data_pengeluaran">
+                    <tbody id="detail_stok_barangjadi">
                         <!-- Data akan diisi oleh AJAX -->
                     </tbody>
                 </table>
@@ -122,7 +133,7 @@ if ($data === null) {
 <script>
     $(document).ready(function() {
         $(document).on('click', '#updateModal', function() {
-            var varidstokbarang = $(this).data('idpkrja');
+            var varidstokbarang = $(this).data('idstokbarang');
             var varnamastokbarang = $(this).data('nmstokbarang');
             var vardeskripsi = $(this).data('deskripsi');
             var varstatus = $(this).data('stts');
@@ -154,14 +165,14 @@ if ($data === null) {
         });
 
         $(document).on('click', '#detailModal', function() {
-            var varidPengeluaran = $(this).data('idpkrja');
+            var varidstokbarang = $(this).data('idstokbarang');
 
             // Mengambil detail transaksi berdasarkan ID
             $.ajax({
-                url: 'webservice/api/detailpengeluaran.php',
+                url: 'webservice/api/detailbarangjadi.php',
                 type: 'GET',
                 data: {
-                    id: varidPengeluaran
+                    id: varidstokbarang
                 },
                 success: function(response) {
                     var data = JSON.parse(response);
@@ -170,15 +181,13 @@ if ($data === null) {
                         rows += `
                             <tr>
                                 <td>${index + 1}</td>
-                                <td>${item.nama}</td>
+                                <td>${item.nama_barang}</td>
                                 <td>${item.jumlah}</td>
-                                <td>${item.nama_satuan}</td>
-                                <td>${item.harga_satuan}</td>
-                                <td>${item.sub_total}</td>
+                                <td>${item.subtotal_upah}</td>
                             </tr>
                         `;
                     });
-                    $('#detail_data_pengeluaran').html(rows);
+                    $('#detail_stok_barangjadi').html(rows);
                 }
             });
         });
