@@ -184,7 +184,7 @@ if (isset($_POST['insert_pendapatan'])) {
     foreach ($_POST['nama_barang'] as $index => $nama_barang) {
         $detailData = array(
             'id_pendapatan' => $id_pendapatan,
-            'id_barang' => mysqli_real_escape_string($koneksi, $nama_barang),
+            'id_barang_jadi' => mysqli_real_escape_string($koneksi, $nama_barang),
             'total_barang' => mysqli_real_escape_string($koneksi, $_POST['total_barang'][$index]),
         );
 
