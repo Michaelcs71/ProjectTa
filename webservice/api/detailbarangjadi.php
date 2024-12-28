@@ -2,15 +2,24 @@
 include "../config.php";
 
 if (isset($_GET['id'])) {
-    $id_barang_masuk = $_GET['id'];
-    $hasil = mysqli_query($koneksi, "SELECT dp.*, 
-        ms.nama_barang
-    FROM
-        detail_barang_jadi_masuk dp
-    LEFT JOIN
-master_barang_jadi ms ON ms.id_barang_jadi = dp.id_barang_jadi
-    WHERE
-id_barang_masuk = '$id_barang_masuk'");
+    $id_barang_jadi = $_GET['id'];
+    $hasil = mysqli_query($koneksi, "SELECT 
+    tbjm.tanggal,
+    p.nama_pekerja,
+    dbjm.subtotal_upah,
+    dbjm.jumlah
+FROM 
+    transaksi_barang_jadi_masuk tbjm
+JOIN 
+    detail_barang_jadi_masuk dbjm ON tbjm.id_barang_masuk = dbjm.id_barang_masuk
+JOIN 
+    master_barang_jadi mbj ON dbjm.id_barang_jadi = mbj.id_barang_jadi
+JOIN 
+    master_pekerja p ON tbjm.id_pekerja = p.id_pekerja
+WHERE 
+    mbj.id_barang_jadi = '$id_barang_jadi'
+ORDER BY 
+    tbjm.tanggal ASC");
 
     $jsonRespon = array();
     if (mysqli_num_rows($hasil) > 0) {

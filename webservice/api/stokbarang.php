@@ -2,15 +2,19 @@
 include "../config.php";
 
 $hasil = mysqli_query($koneksi, "SELECT 
-    tp.*, 
-    ms.nama_pekerja, 
-    ma.nama_akun
+    mbj.id_barang_jadi,
+    mbj.nama_barang,
+    COALESCE(SUM(dbjm.jumlah), 0) - COALESCE(SUM(dp.total_barang), 0) AS jumlah_stok
 FROM 
-    transaksi_barang_jadi_masuk tp
+    master_barang_jadi mbj
 LEFT JOIN 
-    master_pekerja ms ON ms.id_pekerja = tp.id_pekerja
+    detail_barang_jadi_masuk dbjm ON mbj.id_barang_jadi = dbjm.id_barang_jadi
 LEFT JOIN 
-    master_akun ma ON ma.id_akun = tp.id_akun;");
+    detail_pendapatan dp ON mbj.id_barang_jadi = dp.id_barang_jadi
+GROUP BY 
+    mbj.id_barang_jadi, mbj.nama_barang
+ORDER BY 
+    mbj.nama_barang ASC;");
 
 $jsonRespon = array();
 if (mysqli_num_rows($hasil) > 0) {

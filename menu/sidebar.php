@@ -38,14 +38,6 @@
                     </ul>
                 </li>
                 <li>
-
-                    <a href="index.php?link=penggajian">
-                        <i data-feather="home"></i>
-                        <span data-key="t-login">Penggajian</span>
-
-                    </a>
-                </li>
-                <li>
                     <a href="javascript: void(0);" class="has-arrow">
                         <i data-feather="users"></i>
                         <span data-key="t-authentication">Stok</span>
@@ -67,10 +59,10 @@
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
                         <li>
-                            <a href="index.php?link=bbkas" data-key="t-login">Harga Pokok Produksi</a>
+                            <a href="index.php?link=hpp" data-key="t-login">Harga Pokok Produksi</a>
                         </li>
                         <li>
-                            <a href="index.php?link=bbgaji" data-key="t-login">Lab Rugi</a>
+                            <a href="index.php?link=labarugi" data-key="t-login">Laba Rugi</a>
                         </li>
 
                     </ul>

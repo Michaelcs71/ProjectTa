@@ -50,11 +50,8 @@ if ($data === null) {
                                 <thead class="table-light">
                                     <tr>
                                         <th>Nomor</th>
-                                        <th>Nama Pekerja</th>
-                                        <th>Tanggal </th>
-                                        <th>Total Upah</th>
-                                        <th>Keterangan</th>
-                                        <th>Kode Akun</th>
+                                        <th>Nama Barang</th>
+                                        <th>Jumlah Stok </th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -64,28 +61,22 @@ if ($data === null) {
                                     $no = 1;
                                     if ($data !== null) {
                                         foreach ($data as $j) {
-                                            $idstokbarang = $j->id_barang_masuk;
-                                            $namapekerja = $j->nama_pekerja;
-                                            $tanggal = $j->tanggal;
-                                            $totalupah = $j->total_upah;
-                                            $keterangan = $j->keterangan;
-                                            $idakun = $j->id_akun;
+                                            $idbarangjadi = $j->id_barang_jadi;
+                                            $namapekerja = $j->nama_barang;
+                                            $tanggal = $j->jumlah_stok;
 
                                     ?>
                                             <tr>
                                                 <td><?= $no++ ?></td>
                                                 <td><?= $namapekerja ?></td>
                                                 <td><?= $tanggal ?></td>
-                                                <td><?= $totalupah ?></td>
-                                                <td><?= $keterangan ?></td>
-                                                <td><?= $idakun ?></td>
                                                 <td>
                                                     <button type="button" class="btn btn-success" id="detailModal"
                                                         data-bs-toggle="modal" data-bs-target="#detailModalstokbarang"
-                                                        data-idstokbarang="<?= $idstokbarang ?>">Detail</button>
+                                                        data-idstokbarang="<?= $idbarangjadi ?>">Detail</button>
 
-                                                    <button type="button" class="btn btn-warning" id="updateModal">Update</button>
-                                                    <button type="button" class="btn btn-danger" id="updateModal">Hapus</button>
+                                                    <!-- <button type="button" class="btn btn-warning" id="updateModal">Update</button>
+                                                    <button type="button" class="btn btn-danger" id="updateModal">Hapus</button> -->
                                                 </td>
                                             </tr>
                                     <?php
@@ -116,9 +107,10 @@ if ($data === null) {
                     <thead>
                         <tr>
                             <th>Nomor</th>
-                            <th>Nama Barang</th>
-                            <th>Jumlah</th>
-                            <th>Sub Total</th>
+                            <th>Nama Pekerja</th>
+                            <th>Tanggal</th>
+                            <th>Jumlah Barang Disetor</th>
+                            <th>Total Upah</th>
                         </tr>
                     </thead>
                     <tbody id="detail_stok_barangjadi">
@@ -181,7 +173,8 @@ if ($data === null) {
                         rows += `
                             <tr>
                                 <td>${index + 1}</td>
-                                <td>${item.nama_barang}</td>
+                                <td>${item.nama_pekerja}</td>
+                                <td>${item.tanggal}</td>
                                 <td>${item.jumlah}</td>
                                 <td>${item.subtotal_upah}</td>
                             </tr>

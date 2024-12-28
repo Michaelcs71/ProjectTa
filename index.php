@@ -16,8 +16,40 @@ if (isset($_GET['link'])) {
         $title = "Dashboard | ";
     } elseif (($_GET['link']) == 'login') {
         $title = "Form Login | ";
-    } elseif (($_GET['link']) == 'jabatan') {
-        $title = "Master Jabatan | ";
+    } elseif (($_GET['link']) == 'pendapatan') {
+        $title = "Transaksi Pendapatan | ";
+    } elseif (($_GET['link']) == 'pembelian') {
+        $title = "Transaksi Peralatan | ";
+    } elseif (($_GET['link']) == 'bop') {
+        $title = "Transaksi Biaya Overhead | ";
+    } elseif (($_GET['link']) == 'stokmaterial') {
+        $title = "Stok Bahan Material | ";
+    } elseif (($_GET['link']) == 'stokbarang') {
+        $title = "Stok Barang Jadi | ";
+    } elseif (($_GET['link']) == 'hpp') {
+        $title = "Laporan Harga Pokok Penjualan | ";
+    } elseif (($_GET['link']) == 'labarugi') {
+        $title = "Laporan Laba Rugi | ";
+    } elseif (($_GET['link']) == 'pekerja') {
+        $title = "Master Pekerja | ";
+    } elseif (($_GET['link']) == 'supplier') {
+        $title = "Master Supplier | ";
+    } elseif (($_GET['link']) == 'akun') {
+        $title = "Master Akun | ";
+    } elseif (($_GET['link']) == 'kategori') {
+        $title = "Master Kategori | ";
+    } elseif (($_GET['link']) == 'platform') {
+        $title = "Master Platform | ";
+    } elseif (($_GET['link']) == 'bahanmaterial') {
+        $title = "Master Bahan Material | ";
+    } elseif (($_GET['link']) == 'barangajadi') {
+        $title = "Master Barang Jadi | ";
+    } elseif (($_GET['link']) == 'satuan') {
+        $title = "Master Satuan | ";
+    } elseif (($_GET['link']) == 'peralatan') {
+        $title = "Master Peralatan | ";
+    } elseif (($_GET['link']) == 'overhead') {
+        $title = "Master Nama Overhead | ";
     }
 }
 
@@ -60,7 +92,7 @@ if (isset($_GET['link'])) {
 <head>
     <meta charset="utf-8" />
     <title>
-        <?= $title; ?>Sistem Informasi Laundry
+        <?= $title; ?>Sistem Informasi Keuangan
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Premium Multipurpose admin & Dashboard Template" name="description" />
