@@ -52,7 +52,7 @@ if ($data === null) {
                                         <th>Nomor</th>
                                         <th>Nama Barang</th>
                                         <th>Jumlah Stok </th>
-                                        <th>Aksi</th>
+                                        <th>Detail</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -73,7 +73,11 @@ if ($data === null) {
                                                 <td>
                                                     <button type="button" class="btn btn-success" id="detailModal"
                                                         data-bs-toggle="modal" data-bs-target="#detailModalstokbarang"
-                                                        data-idstokbarang="<?= $idbarangjadi ?>">Detail</button>
+                                                        data-idstokbarang="<?= $idbarangjadi ?>">+</button>
+
+                                                    <button type="button" class="btn btn-danger" id="detailModalKeluar"
+                                                        data-bs-toggle="modal" data-bs-target="#detailModalstokbarangkeluar"
+                                                        data-idstokbarang="<?= $idbarangjadi ?>">-</button>
 
                                                     <!-- <button type="button" class="btn btn-warning" id="updateModal">Update</button>
                                                     <button type="button" class="btn btn-danger" id="updateModal">Hapus</button> -->
@@ -114,6 +118,33 @@ if ($data === null) {
                         </tr>
                     </thead>
                     <tbody id="detail_stok_barangjadi">
+                        <!-- Data akan diisi oleh AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- barangjadikeluar -->
+<div class="modal fade" id="detailModalstokbarangkeluar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Detail Data stokbarang</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Nomor</th>
+                            <th>Nama Platform</th>
+                            <th>Tanggal</th>
+                            <th>Jumlah Barang Keluar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detail_stok_barangjadi_keluar">
                         <!-- Data akan diisi oleh AJAX -->
                     </tbody>
                 </table>
@@ -181,6 +212,34 @@ if ($data === null) {
                         `;
                     });
                     $('#detail_stok_barangjadi').html(rows);
+                }
+            });
+        });
+
+        $(document).on('click', '#detailModalKeluar', function() {
+            var varidstokbarang = $(this).data('idstokbarang');
+
+            // Mengambil detail transaksi berdasarkan ID
+            $.ajax({
+                url: 'webservice/api/detailbarangjadikeluar.php',
+                type: 'GET',
+                data: {
+                    id: varidstokbarang
+                },
+                success: function(response) {
+                    var data = JSON.parse(response);
+                    var rows = '';
+                    data.forEach(function(item, index) {
+                        rows += `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${item.nama_platform}</td>
+                                <td>${item.tanggal_pendapatan}</td>
+                                <td>${item.total_barang}</td>
+                            </tr>
+                        `;
+                    });
+                    $('#detail_stok_barangjadi_keluar').html(rows);
                 }
             });
         });

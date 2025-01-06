@@ -40,6 +40,7 @@
                         </select>
                     </div>
                     <div class="col-md-3 mt-2">
+                        <label for="tanggal_pembelian" class="form-label">Tanggal Pembelian</label>
                         <input type="date" class="form-control tanggal-pembelian" name="tanggal_pembelian[]" placeholder="Tanggal Pembelian" required>
                     </div>
 

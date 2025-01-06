@@ -4,20 +4,21 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/lib/function.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/pages/add/pembelian.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/pages/update/pembelian.php";
 
+// Get selected month and year from request
+$selectedMonth = isset($_POST['month']) ? $_POST['month'] : '';
+$selectedYear = isset($_POST['year']) ? $_POST['year'] : '';
 
-if (function_exists('Tampil_Data')) {
-    echo "Function Tampil_Data exists.";
+// Fetch data using the general function
+$data = Tampil_Data("pembelian");
+
+// Filter data based on selected month and year if filter is applied
+if ($selectedMonth && $selectedYear) {
+    $filteredData = array_filter($data, function ($item) use ($selectedMonth, $selectedYear) {
+        $date = DateTime::createFromFormat('Y-m-d', $item->tanggal);
+        return $date->format('m') === $selectedMonth && $date->format('Y') === $selectedYear;
+    });
 } else {
-    echo "Function Tampil_Data does not exist.";
-}
-
-
-
-// Debugging to ensure data fetch is correct
-if ($data === null) {
-    echo "Data is null.";
-} else {
-    echo "Data fetched successfully.";
+    $filteredData = $data; // Show all data if no filter is applied
 }
 ?>
 
@@ -28,24 +29,48 @@ if ($data === null) {
             <div class="row">
                 <div class="col-12">
                     <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0 font-size-18">Data Pembelian</h4>
+                        <h4 class="mb-sm-0 font-size-18">Data Pembelian Peralatan</h4>
                     </div>
                 </div>
             </div>
             <!-- end page title -->
 
+
+
             <div class="row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">Data Pembelian</h4>
+                            <h4 class="card-title">Data Pembelian Peralatan</h4>
                         </div>
                         <div class="card-body">
-                            <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal"
-                                data-bs-target="#insertModal">Tambah Data</button>
 
-                            <table id="datatable-buttons"
-                                class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover">
+                            <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal" data-bs-target="#insertModal">Tambah Data</button>
+
+                            <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover">
+                                <!-- Filter Form -->
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <form method="POST">
+                                            <div class="input-group">
+                                                <select name="month" class="form-select">
+                                                    <option value="">Pilih Bulan</option>
+                                                    <?php for ($m = 1; $m <= 12; $m++) { ?>
+                                                        <option value="<?= str_pad($m, 2, '0', STR_PAD_LEFT) ?>" <?= $selectedMonth == str_pad($m, 2, '0', STR_PAD_LEFT) ? 'selected' : '' ?>><?= date("F", mktime(0, 0, 0, $m, 10)) ?></option>
+                                                    <?php } ?>
+                                                </select>
+                                                <select name="year" class="form-select">
+                                                    <option value="">Pilih Tahun</option>
+                                                    <?php for ($y = date("Y") - 10; $y <= date("Y"); $y++) { ?>
+                                                        <option value="<?= $y ?>" <?= $selectedYear == $y ? 'selected' : '' ?>><?= $y ?></option>
+                                                    <?php } ?>
+                                                </select>
+                                                <button class="btn btn-primary" type="submit">Filter</button>
+                                                <a href="" class="btn btn-secondary">Reset</a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
                                 <thead class="table-light">
                                     <tr>
                                         <th>Nomor</th>
@@ -59,10 +84,9 @@ if ($data === null) {
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $data = Tampil_Data("pembelian");
                                     $no = 1;
-                                    if ($data !== null) {
-                                        foreach ($data as $j) {
+                                    if (!empty($filteredData)) {
+                                        foreach ($filteredData as $j) {
                                             $idPembelian = $j->id_pengeluaran;
                                             $tanggal = $j->tanggal;
                                             $namasupplier = $j->nama_supplier;
@@ -76,19 +100,16 @@ if ($data === null) {
                                                 <td><?= $totalbiaya ?></td>
                                                 <td><?= $namaakun ?></td>
                                                 <td>
-                                                    <button type="button" class="btn btn-primary" id="detailModal"
-                                                        data-bs-toggle="modal" data-bs-target="#detailModalpembelian"
-                                                        data-idpkrja="<?= $idPembelian ?>">Detail</button>
+                                                    <button type="button" class="btn btn-primary" id="detailModal" data-bs-toggle="modal" data-bs-target="#detailModalpembelian" data-idpkrja="<?= $idPembelian ?>">Detail</button>
                                                 </td>
                                                 <td>
-                                                    <button type="button" class="btn btn-primary" id="updateModal"
-                                                        data-bs-toggle="modal" data-bs-target="#updateModalpembelian"
-                                                        data-idpkrja="<?= $idPembelian ?>" data-nmPembelian="<?= $namaPembelian ?>" data-deskripsi="<?= $deskripsi ?>"
-                                                        data-stts="<?= $status ?>" data-namaakun="<?= $namaakun ?>">Update</button>
+                                                    <button type="button" class="btn btn-primary" id="updateModal" data-bs-toggle="modal" data-bs-target="#updateModalpembelian" data-idpkrja="<?= $idPembelian ?>">Update</button>
                                                 </td>
                                             </tr>
                                     <?php
                                         }
+                                    } else {
+                                        echo "<tr><td colspan='7' class='text-center'>Tidak ada data untuk bulan dan tahun yang dipilih.</td></tr>";
                                     }
                                     ?>
                                 </tbody>
@@ -101,6 +122,8 @@ if ($data === null) {
         </div> <!-- container-fluid -->
     </div>
 </div>
+
+
 
 <!-- Detail Modal -->
 <div class="modal fade" id="detailModalpembelian" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
