@@ -1,0 +1,77 @@
+WITH bahan_baku_per_produk AS (
+    SELECT 
+        dj.id_barang_masuk,
+        DATE_FORMAT(tpm.tanggal_pengambilan, '%Y-%m') AS periode,
+        COALESCE(SUM(dpm.jumlah * (
+            SELECT 
+                SUM(dpbm.harga_satuan * dpbm.jumlah) / SUM(dpbm.jumlah)
+            FROM detail_pembelian_bahan_material dpbm
+            WHERE dpbm.id_bahan_material = dpm.id_bahan_material
+        )), 0) AS total_bahan_material
+    FROM 
+        transaksi_penggunaan_bahan_material tpm
+    LEFT JOIN 
+        detail_penggunaan_bahan_material dpm 
+        ON tpm.id_penggunaan_material = dpm.id_penggunaan_material
+   
+    GROUP BY 
+        dj.id_barang_masuk, DATE_FORMAT(tpm.tanggal_pengambilan, '%Y-%m')
+),
+tenaga_kerja_per_produk AS (
+    SELECT 
+        dj.id_barang_masuk,
+        DATE_FORMAT(po.tanggal, '%Y-%m') AS periode,
+        COALESCE(SUM(tj.subtotal_upah), 0) AS total_upah
+    FROM 
+        transaksi_pengeluaran_overhead po
+    LEFT JOIN 
+        detail_barang_jadi_masuk tj 
+        ON po.id_pengeluaran_overhead = tj.id_barang_masuk
+    LEFT JOIN 
+        detail_barang_jadi_masuk dj 
+        ON tj.id_barang_masuk = dj.id_barang_masuk
+    GROUP BY 
+        dj.id_barang_masuk, DATE_FORMAT(po.tanggal, '%Y-%m')
+),
+overhead_per_produk AS (
+    SELECT 
+        dj.id_barang_masuk,
+        DATE_FORMAT(po.tanggal, '%Y-%m') AS periode,
+        COALESCE(SUM(oh.biaya_overhead), 0) AS total_biaya_overhead
+    FROM 
+        transaksi_pengeluaran_overhead po
+    LEFT JOIN 
+        detail_pengeluaran_overhead oh 
+        ON po.id_pengeluaran_overhead = oh.id_pengeluaran_overhead
+    LEFT JOIN 
+        detail_barang_jadi_masuk dj 
+        ON oh.id_barang_masuk = dj.id_barang_masuk
+    GROUP BY 
+        dj.id_barang_masuk, DATE_FORMAT(po.tanggal, '%Y-%m')
+),
+barang_jadi_per_produk AS (
+    SELECT 
+        dj.id_barang_masuk,
+        DATE_FORMAT(tbm.tanggal, '%Y-%m') AS periode,
+        COALESCE(SUM(dj.jumlah), 0) AS total_barang_jadi
+    FROM 
+        transaksi_barang_jadi_masuk tbm
+    LEFT JOIN 
+        detail_barang_jadi_masuk dj 
+        ON tbm.id_barang_masuk = dj.id_barang_masuk
+    GROUP BY 
+        dj.id_barang_masuk, DATE_FORMAT(tbm.tanggal, '%Y-%m')
+)
+SELECT 
+    bbp.periode,
+    bbp.id_barang_masuk,
+    COALESCE(bbp.total_bahan_material, 0) AS total_bahan_baku,
+    COALESCE(tkp.total_upah, 0) AS total_tenaga_kerja,
+    COALESCE(op.total_biaya_overhead, 0) AS total_overhead,
+    COALESCE(bjp.total_barang_jadi, 0) AS total_barang_jadi,
+    (COALESCE(bbp.total_bahan_material, 0) + COALESCE(tkp.total_upah, 0) + COALESCE(op.total_biaya_overhead, 0)) AS total_hpp_per_produk
+FROM bahan_baku_per_produk bbp
+LEFT JOIN tenaga_kerja_per_produk tkp ON bbp.periode = tkp.periode AND bbp.id_barang_masuk = tkp.id_barang_masuk
+LEFT JOIN overhead_per_produk op ON bbp.periode = op.periode AND bbp.id_barang_masuk = op.id_barang_masuk
+LEFT JOIN barang_jadi_per_produk bjp ON bbp.periode = bjp.periode AND bbp.id_barang_masuk = bjp.id_barang_masuk
+ORDER BY bbp.periode, bbp.id_barang_masuk;

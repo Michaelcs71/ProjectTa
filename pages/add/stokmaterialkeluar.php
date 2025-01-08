@@ -39,6 +39,23 @@
                             ?>
                         </select>
                     </div>
+                    <div class="mb-3">
+                        <label for="nama" class="form-label">Nama Barang Jadi yang Akan Dibuat</label>
+                        <select data-trigger class="form-select" name="nama_barang" id="namabarang" required>
+                            <option selected disabled>Masukkan Nama</option>
+                            <?php
+                            $queryGetNama = "SELECT * FROM master_barang_jadi";
+                            $getNama = mysqli_query($koneksi, $queryGetNama);
+                            while ($nama = mysqli_fetch_assoc($getNama)) {
+                            ?>
+                                <option value="<?= $nama['id_barang_jadi'] ?>">
+                                    <?= $nama['nama_barang'] ?>
+                                </option>
+                            <?php
+                            }
+                            ?>
+                        </select>
+                    </div>
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="tanggal_pengambilan" class="form-label">Tanggal Pengambilan</label>

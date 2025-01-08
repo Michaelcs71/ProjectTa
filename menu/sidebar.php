@@ -62,6 +62,9 @@
                             <a href="index.php?link=hpp" data-key="t-login">Harga Pokok Produksi</a>
                         </li>
                         <li>
+                            <a href="index.php?link=detailhpp" data-key="t-login">Detail HPP</a>
+                        </li>
+                        <li>
                             <a href="index.php?link=labarugi" data-key="t-login">Laba Rugi</a>
                         </li>
 

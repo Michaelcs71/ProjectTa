@@ -356,6 +356,7 @@ if (isset($_POST['insert_stokkeluar'])) {
     $transaksiData = array(
         'id_pekerja' => mysqli_real_escape_string($koneksi, $_POST['nama_pekerja']),
         'id_akun' => mysqli_real_escape_string($koneksi, $_POST['nama_akun']),
+        'id_barang_jadi' => mysqli_real_escape_string($koneksi, $_POST['nama_barang']),
         'tanggal_pengambilan' => mysqli_real_escape_string($koneksi, $_POST['tanggal_pengambilan']),
         'estimasi_tanggal_selesai' => mysqli_real_escape_string($koneksi, $_POST['estimasi_tanggal_jadi']),
         'target_jumlah' => mysqli_real_escape_string($koneksi, $_POST['target_jumlah']),
