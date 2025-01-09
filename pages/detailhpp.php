@@ -70,7 +70,7 @@ if ($selectedMonth && $selectedYear) {
                                 </div>
                             </form>
 
-                            <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover">
+                            <table id="datatable-buttons" class="table table-bordered nowrap w-100 table-striped table-hover">
                                 <thead class="table-light">
                                     <tr>
                                         <th>Nomor</th>
@@ -80,7 +80,7 @@ if ($selectedMonth && $selectedYear) {
                                         <th>Biaya Overhead</th>
                                         <th>Biaya Tenaga Kerja</th>
                                         <th>Total Barang Jadi</th>
-                                        <th>Total Per Unit HPP</th>
+                                        <th>Total HPP Per Unit</th>
                                     </tr>
                                 </thead>
                                 <tbody>
