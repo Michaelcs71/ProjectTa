@@ -366,6 +366,8 @@ if (isset($_GET['link'])) {
             include "pages/hpp.php";
         } elseif ($_GET['link'] == 'detailhpp') {
             include "pages/detailhpp.php";
+        } elseif ($_GET['link'] == 'labarugi') {
+            include "pages/labarugi.php";
         } elseif ($_GET['link'] == 'jurnal') {
             if (isset($_GET['aksi'])) {
                 if ($_GET['aksi'] == 'delete') {

@@ -26,15 +26,6 @@ if ($selectedMonth && $selectedYear) {
 <div class="main-content">
     <div class="page-content">
         <div class="container-fluid">
-            <!-- start page title -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0 font-size-18">Laporan Harga Pokok Produk Per Produk</h4>
-                    </div>
-                </div>
-            </div>
-            <!-- end page title -->
 
             <div class="row">
                 <div class="col-12">
@@ -70,15 +61,16 @@ if ($selectedMonth && $selectedYear) {
                                 </div>
                             </form>
 
-                            <table id="datatable-buttons" class="table table-bordered nowrap w-100 table-striped table-hover">
+
+                            <table id="tablecustom" class="table table-bordered nowrap w-100 table-striped table-hover">
                                 <thead class="table-light">
                                     <tr>
                                         <th>Nomor</th>
                                         <th>Tanggal</th>
                                         <th>Nama Barang</th>
-                                        <th>Biaya Bahan Baku</th>
-                                        <th>Biaya Overhead</th>
-                                        <th>Biaya Tenaga Kerja</th>
+                                        <th>Total Biaya Bahan Baku</th>
+                                        <th>Total Biaya Overhead</th>
+                                        <th>Total Biaya Tenaga Kerja</th>
                                         <th>Total Barang Jadi</th>
                                         <th>Total HPP Per Unit</th>
                                     </tr>
