@@ -46,7 +46,7 @@ if ($data === null) {
                             <!-- <button type="button" class="btn btn-danger mb-sm-2" data-bs-toggle="modal"
                                 data-bs-target="#insertModalKeluar">Stok Keluar</button> -->
                             <table id="datatable-buttons"
-                                class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover">
+                                class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover text-center">
                                 <thead class="table-light">
                                     <tr>
                                         <th>Nomor</th>
@@ -128,7 +128,7 @@ if ($data === null) {
 
 <!-- barangjadikeluar -->
 <div class="modal fade" id="detailModalstokbarangkeluar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Detail Data stokbarang</h5>
@@ -200,21 +200,27 @@ if ($data === null) {
                 success: function(response) {
                     var data = JSON.parse(response);
                     var rows = '';
+                    var currencyFormat = new Intl.NumberFormat('id-ID', {
+                        style: 'currency',
+                        currency: 'IDR'
+                    });
+
                     data.forEach(function(item, index) {
                         rows += `
-                            <tr>
-                                <td>${index + 1}</td>
-                                <td>${item.nama_pekerja}</td>
-                                <td>${item.tanggal}</td>
-                                <td>${item.jumlah}</td>
-                                <td>${item.subtotal_upah}</td>
-                            </tr>
-                        `;
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.nama_pekerja}</td>
+                        <td>${item.tanggal}</td>
+                        <td>${item.jumlah}</td>
+                        <td class="text-end">${currencyFormat.format(item.subtotal_upah)}</td>
+                    </tr>
+                `;
                     });
                     $('#detail_stok_barangjadi').html(rows);
                 }
             });
         });
+
 
         $(document).on('click', '#detailModalKeluar', function() {
             var varidstokbarang = $(this).data('idstokbarang');

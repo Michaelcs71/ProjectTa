@@ -5,11 +5,28 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/pages/add/bop.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/pages/update/bop.php";
 
 
-if (function_exists('Tampil_Data')) {
-    echo "Function Tampil_Data exists.";
-} else {
-    echo "Function Tampil_Data does not exist.";
+$data = Tampil_Data("bop");
+
+// Get selected month and year from request
+$selectedMonth = isset($_POST['month']) ? $_POST['month'] : '';
+$selectedYear = isset($_POST['year']) ? $_POST['year'] : '';
+
+// Ensure $data is an array
+if (!is_array($data)) {
+    $data = []; // Default to empty array if $data is null or not an array
 }
+
+// Filter data if month and year are selected
+if ($selectedMonth && $selectedYear) {
+    $filteredData = array_filter($data, function ($item) use ($selectedMonth, $selectedYear) {
+        $date = DateTime::createFromFormat('Y-m-d', $item->tanggal);
+        return $date && $date->format('m') === $selectedMonth && $date->format('Y') === $selectedYear;
+    });
+} else {
+    $filteredData = $data; // Show all data if no filter is applied
+}
+
+
 
 
 
@@ -41,17 +58,37 @@ if ($data === null) {
                             <h4 class="card-title">Data Biaya Overhead</h4>
                         </div>
                         <div class="card-body">
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <form method="POST">
+                                        <div class="input-group">
+                                            <select name="month" class="form-select">
+                                                <option value="">Pilih Bulan</option>
+                                                <?php for ($m = 1; $m <= 12; $m++) { ?>
+                                                    <option value="<?= str_pad($m, 2, '0', STR_PAD_LEFT) ?>" <?= $selectedMonth == str_pad($m, 2, '0', STR_PAD_LEFT) ? 'selected' : '' ?>><?= date("F", mktime(0, 0, 0, $m, 10)) ?></option>
+                                                <?php } ?>
+                                            </select>
+                                            <select name="year" class="form-select">
+                                                <option value="">Pilih Tahun</option>
+                                                <?php for ($y = date("Y") - 10; $y <= date("Y"); $y++) { ?>
+                                                    <option value="<?= $y ?>" <?= $selectedYear == $y ? 'selected' : '' ?>><?= $y ?></option>
+                                                <?php } ?>
+                                            </select>
+                                            <button class="btn btn-primary" type="submit">Filter</button>
+                                            <a href="" class="btn btn-secondary">Reset</a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                             <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal"
                                 data-bs-target="#insertModal">Tambah Data</button>
-
                             <table id="datatable-buttons"
-                                class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover">
+                                class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover text-center">
                                 <thead class="table-light">
-                                    <tr>
+                                    <tr class="text-center">
                                         <th>Nomor</th>
                                         <th>Tanggal</th>
                                         <th>Total Biaya</th>
-                                        <th>Kode Akun</th>
                                         <th>Detail</th>
                                         <th>Aksi</th>
                                     </tr>
@@ -60,18 +97,16 @@ if ($data === null) {
                                     <?php
                                     $data = Tampil_Data("bop");
                                     $no = 1;
-                                    if ($data !== null) {
+                                    if (!empty($filteredData)) {
                                         foreach ($data as $j) {
                                             $idperlengkapan = $j->id_pengeluaran_overhead;
                                             $tanggal = $j->tanggal;
                                             $totalbiaya = $j->total;
-                                            $namaakun = $j->nama_akun;
                                     ?>
                                             <tr>
                                                 <td><?= $no++ ?></td>
                                                 <td><?= $tanggal ?></td>
-                                                <td><?= $totalbiaya ?></td>
-                                                <td><?= $namaakun ?></td>
+                                                <td class="text-end">Rp. <?= number_format($j->total, 2, ',', '.') ?></td>
                                                 <td>
                                                     <button type="button" class="btn btn-primary" id="detailModal"
                                                         data-bs-toggle="modal" data-bs-target="#detailModalperlengkapan"

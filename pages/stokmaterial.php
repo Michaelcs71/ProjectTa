@@ -47,7 +47,7 @@ if ($data === null) {
                             <button type="button" class="btn btn-danger mb-sm-2" data-bs-toggle="modal"
                                 data-bs-target="#insertModalKeluar">Stok Keluar</button>
                             <table id="datatable-buttons"
-                                class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover">
+                                class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover text-center">
                                 <thead class="table-light">
                                     <tr>
                                         <th>Nomor</th>
@@ -105,14 +105,14 @@ if ($data === null) {
 
 <!-- Detail Modal Material Masuk -->
 <div class="modal fade" id="detailMaterialMasuk" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Detail Masuk Material</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <table class="table table-bordered">
+                <table class="table table-bordered text-center">
                     <thead>
                         <tr>
                             <th>Nomor</th>
@@ -134,14 +134,14 @@ if ($data === null) {
 
 <!-- Detail Modal Material Masuk -->
 <div class="modal fade" id="detailMaterialKeluar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Detail Pengambilan Bahan Material</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <table class="table table-bordered">
+                <table class="table table-bordered text-center">
                     <thead>
                         <tr>
                             <th>Nomor</th>
@@ -209,6 +209,10 @@ if ($data === null) {
                 success: function(response) {
                     var data = JSON.parse(response);
                     var rows = '';
+                    var currencyFormat = new Intl.NumberFormat('id-ID', {
+                        style: 'currency',
+                        currency: 'IDR'
+                    });
 
                     if (data.length > 0) {
                         data.forEach(function(item, index) {
@@ -218,8 +222,8 @@ if ($data === null) {
                             <td>${item.nama_supplier}</td>
                             <td>${item.tanggal_masuk}</td>
                             <td>${item.jumlah}</td>
-                            <td>${item.harga_satuan}</td>
-                            <td>${item.sub_total}</td>
+                            <td class="text-end">${currencyFormat.format(item.harga_satuan)}</td>
+                            <td class="text-end">${currencyFormat.format(item.sub_total)}</td>
                         </tr>
                     `;
                         });

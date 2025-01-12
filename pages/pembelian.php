@@ -47,7 +47,7 @@ if ($selectedMonth && $selectedYear) {
 
                             <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal" data-bs-target="#insertModal">Tambah Data</button>
 
-                            <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover">
+                            <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover text-center">
                                 <!-- Filter Form -->
                                 <div class="row mb-4">
                                     <div class="col-md-6">
@@ -77,7 +77,6 @@ if ($selectedMonth && $selectedYear) {
                                         <th>Tanggal</th>
                                         <th>Nama Supplier</th>
                                         <th>Total Biaya</th>
-                                        <th>Kode Akun</th>
                                         <th>Detail</th>
                                         <th>Aksi</th>
                                     </tr>
@@ -91,14 +90,12 @@ if ($selectedMonth && $selectedYear) {
                                             $tanggal = $j->tanggal;
                                             $namasupplier = $j->nama_supplier;
                                             $totalbiaya = $j->total_biaya;
-                                            $namaakun = $j->nama_akun;
                                     ?>
                                             <tr>
                                                 <td><?= $no++ ?></td>
                                                 <td><?= $tanggal ?></td>
                                                 <td><?= $namasupplier ?></td>
-                                                <td><?= $totalbiaya ?></td>
-                                                <td><?= $namaakun ?></td>
+                                                <td class="text-end">Rp. <?= number_format($j->total_biaya, 2, ',', '.') ?></td>
                                                 <td>
                                                     <button type="button" class="btn btn-primary" id="detailModal" data-bs-toggle="modal" data-bs-target="#detailModalpembelian" data-idpkrja="<?= $idPembelian ?>">Detail</button>
                                                 </td>

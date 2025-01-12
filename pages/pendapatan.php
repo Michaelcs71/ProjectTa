@@ -4,18 +4,31 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/lib/function.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/pages/add/pendapatan.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/pages/update/pendapatan.php";
 
+// Fetch data from database
+$data = Tampil_Data("pendapatan");
 
-if (function_exists('Tampil_Data')) {
-    echo "Function Tampil_Data exists.";
-} else {
-    echo "Function Tampil_Data does not exist.";
+// Get selected month and year from request
+$selectedMonth = isset($_POST['month']) ? $_POST['month'] : '';
+$selectedYear = isset($_POST['year']) ? $_POST['year'] : '';
+
+// Ensure $data is an array
+if (!is_array($data)) {
+    $data = []; // Default to empty array if $data is null or not an array
 }
 
-
+// Filter data if month and year are selected
+if ($selectedMonth && $selectedYear) {
+    $filteredData = array_filter($data, function ($item) use ($selectedMonth, $selectedYear) {
+        $date = DateTime::createFromFormat('Y-m-d', $item->tanggal_pendapatan);
+        return $date && $date->format('m') === $selectedMonth && $date->format('Y') === $selectedYear;
+    });
+} else {
+    $filteredData = $data; // Show all data if no filter is applied
+}
 
 // Debugging to ensure data fetch is correct
-if ($data === null) {
-    echo "Data is null.";
+if (empty($data)) {
+    echo "Data is empty or could not be fetched.";
 } else {
     echo "Data fetched successfully.";
 }
@@ -24,58 +37,76 @@ if ($data === null) {
 <div class="main-content">
     <div class="page-content">
         <div class="container-fluid">
-            <!-- start page title -->
+            <!-- Start page title -->
             <div class="row">
                 <div class="col-12">
                     <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0 font-size-18">Data Kategori</h4>
+                        <h4 class="mb-sm-0 font-size-18">Data Pendapatan</h4>
                     </div>
                 </div>
             </div>
-            <!-- end page title -->
+            <!-- End page title -->
 
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header">
-                            <h4 class="card-title">Data Kategori</h4>
-                        </div>
+
                         <div class="card-body">
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <form method="POST">
+                                        <div class="input-group">
+                                            <select name="month" class="form-select">
+                                                <option value="">Pilih Bulan</option>
+                                                <?php for ($m = 1; $m <= 12; $m++) { ?>
+                                                    <option value="<?= str_pad($m, 2, '0', STR_PAD_LEFT) ?>" <?= $selectedMonth == str_pad($m, 2, '0', STR_PAD_LEFT) ? 'selected' : '' ?>><?= date("F", mktime(0, 0, 0, $m, 10)) ?></option>
+                                                <?php } ?>
+                                            </select>
+                                            <select name="year" class="form-select">
+                                                <option value="">Pilih Tahun</option>
+                                                <?php for ($y = date("Y") - 10; $y <= date("Y"); $y++) { ?>
+                                                    <option value="<?= $y ?>" <?= $selectedYear == $y ? 'selected' : '' ?>><?= $y ?></option>
+                                                <?php } ?>
+                                            </select>
+                                            <button class="btn btn-primary" type="submit">Filter</button>
+                                            <a href="" class="btn btn-secondary">Reset</a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                             <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal"
                                 data-bs-target="#insertModal">Tambah Data</button>
 
                             <table id="datatable-buttons"
-                                class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover">
+                                class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover text-center">
                                 <thead class="table-light">
                                     <tr>
                                         <th>Nomor</th>
                                         <th>Nama Platform</th>
-                                        <th>Total Pendapatan</th>
                                         <th>Bulan Pendapatan</th>
-                                        <th>Kode Akun</th>
+                                        <th>Total Pendapatan</th>
+                                        <!-- <th>Kode Akun</th> -->
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $data = Tampil_Data("pendapatan");
                                     $no = 1;
-                                    if ($data !== null) {
-                                        foreach ($data as $j) {
+                                    if (!empty($filteredData)) {
+                                        foreach ($filteredData as $j) {
                                             $idpendapatan = $j->id_pendapatan;
                                             $namakategori = $j->nama_platform;
-                                            $deskripsi = $j->total_pendapatan;
                                             $status = $j->tanggal_pendapatan;
-                                            $namaakun = $j->id_akun;
+                                            $deskripsi = $j->total_pendapatan;
+                                            // $namaakun = $j->id_akun;
                                     ?>
                                             <tr>
                                                 <td><?= $no++ ?></td>
                                                 <td><?= $namakategori ?></td>
-                                                <td class="text-end">Rp. <?= number_format($j->total_pendapatan, 2, ',', '.') ?></td>
                                                 <td><?= $status ?></td>
-                                                <td><?= $namaakun ?></td>
+                                                <td class="text-end">Rp. <?= number_format($j->total_pendapatan, 2, ',', '.') ?></td>
+                                                <!-- <td><?= $namaakun ?></td> -->
                                                 <td>
-
                                                     <button type="button" class="btn btn-primary" id="detailModal"
                                                         data-bs-toggle="modal" data-bs-target="#detailModalPendapatan"
                                                         data-idpkrja="<?= $idpendapatan ?>">Detail</button>
@@ -84,23 +115,29 @@ if ($data === null) {
                                                         data-bs-toggle="modal" data-bs-target="#updateModalPendapatan"
                                                         data-idpkrja="<?= $idpendapatan ?>" data-nmkategori="<?= $namakategori ?>" data-deskripsi="<?= $deskripsi ?>"
                                                         data-stts="<?= $status ?>" data-namaakun="<?= $namaakun ?>">Update</button>
-
                                                 </td>
                                             </tr>
-                                    <?php
+                                        <?php
                                         }
+                                    } else {
+                                        ?>
+                                        <tr>
+                                            <td colspan="6" class="text-center">Tidak ada data.</td>
+                                        </tr>
+                                    <?php
                                     }
                                     ?>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                    <!-- end card -->
-                </div> <!-- end col -->
-            </div> <!-- end row -->
-        </div> <!-- container-fluid -->
+                    <!-- End card -->
+                </div> <!-- End col -->
+            </div> <!-- End row -->
+        </div> <!-- Container-fluid -->
     </div>
 </div>
+
 
 <div class="modal fade" id="detailModalPendapatan" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">

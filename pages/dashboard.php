@@ -14,7 +14,7 @@
             </div>
             <div class="row">
 
-                <div class="col-3-5">
+                <div class="col-4">
                     <div class="small-box bg-green text-white shadow-primary">
                         <div class="inner">
                             <h1 class="text-white" id="totalPendapatan">Rp 0</h1>
@@ -26,7 +26,7 @@
                     </div>
                 </div>
 
-                <div class="col-3-5">
+                <div class="col-4">
                     <div class="small-box bg-red text-white shadow-primary">
                         <div class="inner">
                             <h1 class="text-white" id="totalHpp">Rp 0</h1>
@@ -40,7 +40,7 @@
 
 
 
-                <div class="col-3-5">
+                <div class="col-4">
                     <div class="small-box bg-yellow text-white shadow-primary">
                         <div class="inner">
                             <h1 class="text-white" id="totalLabaRugi">Loading...</h1>
@@ -56,10 +56,21 @@
                 <div class="col-xl-6">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title mb-0">Bar Chart</h4>
+                            <h4 class="card-title mb-0">HPP Per Unit</h4>
                         </div>
                         <div class="card-body">
                             <canvas id="barChart"></canvas>
+                        </div>
+                    </div><!--end card-->
+                </div>
+
+                <div class="col-xl-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title mb-0">Pendapatan Per Bulan</h4>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="lineChart"></canvas>
                         </div>
                     </div><!--end card-->
                 </div>
@@ -210,6 +221,83 @@
                                         currency: 'IDR'
                                     }).format(tooltipItem.raw);
                                 }
+                            }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+</script>
+
+<script>
+    const apiUrll = "http://localhost/ProjectTa/webservice/api/labarugidashboard.php";
+
+    // Ambil data dari API
+    fetch(apiUrll)
+        .then(response => response.json())
+        .then(data => {
+            // Memproses data dari API
+            const labels = data.map(item => item.periode); // Periode sebagai label
+            const labaRugiBersih = data.map(item => item.laba_rugi_bersih); // Laba bersih sebagai data
+
+            // Membuat Line Chart
+            const ctx = document.getElementById('lineChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Laba Bersih (Rp)',
+                        data: labaRugiBersih,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 5,
+                        pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return new Intl.NumberFormat('id-ID', {
+                                        style: 'currency',
+                                        currency: 'IDR'
+                                    }).format(tooltipItem.raw);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Periode'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Laba Bersih (Rp)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return new Intl.NumberFormat('id-ID', {
+                                        style: 'currency',
+                                        currency: 'IDR'
+                                    }).format(value);
+                                },
+                                beginAtZero: true
                             }
                         }
                     }
