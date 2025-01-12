@@ -1,8 +1,7 @@
 <?php
 include "../config.php";
 
-$hasil = mysqli_query($koneksi, "
-WITH bahan_baku_per_produk AS (
+$hasil = mysqli_query($koneksi, "WITH bahan_baku_per_produk AS (
     SELECT 
         tpm.id_penggunaan_material,
         dpm.id_bahan_material,
@@ -82,12 +81,7 @@ hpp_per_produk AS (
 )
 SELECT 
     periode,
-    id_barang_jadi,
     nama_barang,
-    jumlah_produksi,
-    total_bahan_baku,
-    total_upah,
-    total_overhead,
     hpp_per_unit
 FROM hpp_per_produk
 ORDER BY periode, id_barang_jadi;");
@@ -99,5 +93,5 @@ if (mysqli_num_rows($hasil) > 0) {
     }
 }
 
-
+header('Content-Type: application/json');
 echo json_encode($jsonRespon, JSON_PRETTY_PRINT);

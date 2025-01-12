@@ -148,6 +148,7 @@ if (isset($_GET['link'])) {
 
     <!-- Jquery Customm by SI UMC -->
     <script src="lib/jsFunction.js"></script>
+    <script src="assets/libs/chart.js/chartbar.js"></script>
 
 
 

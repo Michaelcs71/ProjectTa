@@ -17,19 +17,17 @@
                             $queryGetNama = "SELECT * FROM master_platform";
                             $getNama = mysqli_query($koneksi, $queryGetNama);
                             while ($nama = mysqli_fetch_assoc($getNama)) {
-                            ?>
-                                <option value="<?= $nama['id_platform'] ?>">
-                                    <?= $nama['nama_platform'] ?>
-                                </option>
-                            <?php
+                                echo "<option value='{$nama['id_platform']}'>{$nama['nama_platform']}</option>";
                             }
                             ?>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="" class="form-label">Total Pendapatan</label>
-                        <input type="number" class="form-control" name="total_pendapatan" id="" required>
+                        <label for="totalPendapatan" class="form-label">Total Pendapatan</label>
+                        <input type="text" class="form-control" name="total_pendapatan" id="totalPendapatan" required>
+                        <input type="hidden" name="total_pendapatan_clean" id="totalPendapatanClean">
                     </div>
+
                     <div class="mb-3">
                         <label for="" class="form-label">Tanggal Pendapatan</label>
                         <input type="date" class="form-control" name="tanggal_pendapatan" placeholder="Masukkan tanggal terakhir pada bulan yang dipilih" id="" required>
@@ -42,13 +40,8 @@
                             $queryGetNama = "SELECT * FROM master_akun";
                             $getNama = mysqli_query($koneksi, $queryGetNama);
                             while ($nama = mysqli_fetch_assoc($getNama)) {
-                                // Menambahkan logika untuk memilih kode akun 401
                                 $selected = ($nama['id_akun'] == 401) ? 'selected' : '';
-                            ?>
-                                <option value="<?= $nama['id_akun'] ?>" <?= $selected ?>>
-                                    <?= $nama['nama_akun'] ?>
-                                </option>
-                            <?php
+                                echo "<option value='{$nama['id_akun']}' {$selected}>{$nama['nama_akun']}</option>";
                             }
                             ?>
                         </select>
@@ -65,11 +58,7 @@
                                     $queryGetNama = "SELECT * FROM master_barang_jadi";
                                     $getNama = mysqli_query($koneksi, $queryGetNama);
                                     while ($nama = mysqli_fetch_assoc($getNama)) {
-                                    ?>
-                                        <option value="<?= $nama['id_barang_jadi'] ?>">
-                                            <?= $nama['nama_barang'] ?>
-                                        </option>
-                                    <?php
+                                        echo "<option value='{$nama['id_barang_jadi']}'>{$nama['nama_barang']}</option>";
                                     }
                                     ?>
                                 </select>
@@ -84,7 +73,6 @@
                     </div>
                     <button type="button" id="tambah-barang" class="btn btn-success btn-sm mb-3">+ Tambah</button>
 
-
                     <!-- Tombol Simpan -->
                     <div class="mb-3 d-flex justify-content-end">
                         <button name="insert_pendapatan" type="submit" class="btn btn-primary">Simpan Data</button>
@@ -96,23 +84,33 @@
 </div>
 
 <script>
-    function hitungSubtotal(row) {
-        const total = row.querySelector('.total-barang').value || 0;
-        const harga = row.querySelector('.harga-barang').value || 0;
-        const subtotal = row.querySelector('.subtotal');
+    const totalPendapatanInput = document.getElementById('totalPendapatan');
+    const totalPendapatanClean = document.getElementById('totalPendapatanClean');
 
-        subtotal.value = total * harga;
-        hitungTotalKeseluruhan();
-    }
+    totalPendapatanInput.addEventListener('input', function(e) {
+        // Ambil nilai input tanpa format
+        let value = e.target.value.replace(/[^0-9]/g, ''); // Hapus karakter non-angka
 
-    function hitungTotalKeseluruhan() {
-        const subtotals = document.querySelectorAll('.subtotal');
-        let total = 0;
-        subtotals.forEach(sub => {
-            total += parseFloat(sub.value) || 0;
-        });
-        document.getElementById('total-pembelian').value = total;
-    }
+        // Cegah nilai kosong
+        if (value === '') {
+            totalPendapatanInput.value = '';
+            totalPendapatanClean.value = '';
+            return;
+        }
+
+        // Format nilai sebagai Rupiah
+        const formattedValue = new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(value);
+
+        // Perbarui input dengan format Rupiah
+        totalPendapatanInput.value = formattedValue;
+
+        // Simpan nilai bersih (tanpa format) ke input tersembunyi
+        totalPendapatanClean.value = value;
+    });
 
     // Tambah Baris Barang
     document.getElementById('tambah-barang').addEventListener('click', function() {
@@ -121,21 +119,17 @@
         newBarang.classList.add('row', 'mb-3', 'barang-item');
         newBarang.innerHTML = `
             <div class="col-md-3">
-                                <select class="form-control " name="nama_barang[]" required>
-                                    <option selected disabled>Pilih Material</option>
-                                    <?php
-                                    $queryGetNama = "SELECT * FROM master_barang_jadi";
-                                    $getNama = mysqli_query($koneksi, $queryGetNama);
-                                    while ($nama = mysqli_fetch_assoc($getNama)) {
-                                    ?>
-                                        <option value="<?= $nama['id_barang_jadi'] ?>">
-                                            <?= $nama['nama_barang'] ?>
-                                        </option>
-                                    <?php
-                                    }
-                                    ?>
-                                </select>
-                            </div>
+                <select class="form-control " name="nama_barang[]" required>
+                    <option selected disabled>Pilih Material</option>
+                    <?php
+                    $queryGetNama = "SELECT * FROM master_barang_jadi";
+                    $getNama = mysqli_query($koneksi, $queryGetNama);
+                    while ($nama = mysqli_fetch_assoc($getNama)) {
+                        echo "<option value='{$nama['id_barang_jadi']}'>{$nama['nama_barang']}</option>";
+                    }
+                    ?>
+                </select>
+            </div>
             <div class="col-md-2">
                 <input type="number" class="form-control total-barang" name="total_barang[]" placeholder="total" required>
             </div>
@@ -144,18 +138,6 @@
             </div>
         `;
         formBarang.appendChild(newBarang);
-        attachEventsToRow(newBarang);
+        newBarang.querySelector('.remove-barang').addEventListener('click', () => newBarang.remove());
     });
-
-    function attachEventsToRow(row) {
-        row.querySelector('.total-barang').addEventListener('input', () => hitungSubtotal(row));
-        row.querySelector('.harga-barang').addEventListener('input', () => hitungSubtotal(row));
-        row.querySelector('.remove-barang').addEventListener('click', () => {
-            row.remove();
-            hitungTotalKeseluruhan();
-        });
-    }
-
-    // Attach initial events
-    document.querySelectorAll('.barang-item').forEach(attachEventsToRow);
 </script>

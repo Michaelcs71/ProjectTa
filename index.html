@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bar Chart Example</title>
+    <!-- Tambahkan CDN Chart.js -->
+  </head>
+  <body>
+    <div class="col-xl-6">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title mb-0">Bar Chart</h4>
+        </div>
+        <div class="card-body">
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+      <!--end card-->
+    </div>
+
+    <script>
+      // Data dan konfigurasi bar chart
+      const ctx = document.getElementById("barChart").getContext("2d");
+      const barChart = new Chart(ctx, {
+        type: "bar", // Tipe chart
+        data: {
+          labels: ["January", "February", "March", "April", "May"], // Label sumbu x
+          datasets: [
+            {
+              label: "Sales",
+              data: [120, 150, 180, 200, 170], // Data sumbu y
+              backgroundColor: "#2ab57d", // Warna bar
+              borderColor: "#1e874c", // Warna border bar
+              borderWidth: 1, // Ketebalan border
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              beginAtZero: true,
+            },
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

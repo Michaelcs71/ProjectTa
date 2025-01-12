@@ -71,7 +71,7 @@ if ($data === null) {
                                             <tr>
                                                 <td><?= $no++ ?></td>
                                                 <td><?= $namakategori ?></td>
-                                                <td><?= $deskripsi ?></td>
+                                                <td class="text-end">Rp. <?= number_format($j->total_pendapatan, 2, ',', '.') ?></td>
                                                 <td><?= $status ?></td>
                                                 <td><?= $namaakun ?></td>
                                                 <td>

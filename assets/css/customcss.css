@@ -266,3 +266,8 @@ table.dataTable > tbody > tr.child:hover {
   color: #999;
   cursor: not-allowed;
 }
+
+.col-3-5 {
+  flex: 0 0 29.166667%; /* Lebar kustom: (3.5/12) * 100 */
+  max-width: 29.166667%;
+}

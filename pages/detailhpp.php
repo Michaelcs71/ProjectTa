@@ -92,11 +92,12 @@ if ($selectedMonth && $selectedYear) {
                                                 <td><?= $no++ ?></td>
                                                 <td><?= $tanggal ?></td>
                                                 <td><?= $namabarang ?></td>
-                                                <td><?= $totalBahanBaku ?></td>
-                                                <td><?= $totalOverhead ?></td>
-                                                <td><?= $totalTenagaKerja ?></td>
+                                                <td class="text-end">Rp. <?= number_format(!empty($j->total_bahan_baku) ? $j->total_bahan_baku : 0, 2, ',', '.') ?></td>
+                                                <td class="text-end">Rp. <?= number_format(!empty($j->total_overhead) ? $j->total_overhead : 0, 2, ',', '.') ?></td>
+                                                <td class="text-end">Rp. <?= number_format(!empty($j->total_upah) ? $j->total_upah : 0, 2, ',', '.') ?></td>
                                                 <td><?= $totalBarangJadi ?></td>
-                                                <td><?= $totalHpp ?></td>
+                                                <td class="text-end">Rp. <?= number_format(!empty($j->hpp_per_unit) ? $j->hpp_per_unit : 0, 2, ',', '.') ?></td>
+
 
                                             </tr>
                                     <?php

@@ -165,22 +165,27 @@ if (isset($_POST['insert_peralatan'])) {
 
 
 if (isset($_POST['insert_pendapatan'])) {
-    // Data untuk transaksi pengeluaran
+    // Bersihkan format dari input total_pendapatan
+
+    $totalPendapatanRaw = $_POST['total_pendapatan_clean'];
+    $totalPendapatan = str_replace(',', '.', $totalPendapatanRaw);
+
+    // Data untuk transaksi pendapatan
     $transaksiData = array(
         'id_platform' => mysqli_real_escape_string($koneksi, $_POST['nama_platform']),
-        'total_pendapatan' => mysqli_real_escape_string($koneksi, $_POST['total_pendapatan']),
+        'total_pendapatan' => mysqli_real_escape_string($koneksi, $totalPendapatan),
         'tanggal_pendapatan' => mysqli_real_escape_string($koneksi, $_POST['tanggal_pendapatan']),
         'id_akun' => mysqli_real_escape_string($koneksi, $_POST['nama_akun']),
         'date_created' => $time,
     );
 
-    // Insert data ke tabel transaksi_pengeluaran
+    // Insert data ke tabel transaksi_pendapatan
     Insert_Data("transaksi_pendapatan", $transaksiData);
 
     // Ambil ID transaksi terakhir yang telah diinput
     $id_pendapatan = mysqli_insert_id($koneksi);
 
-    // Loop untuk setiap barang dalam detail_pengeluaran
+    // Loop untuk setiap barang dalam detail_pendapatan
     foreach ($_POST['nama_barang'] as $index => $nama_barang) {
         $detailData = array(
             'id_pendapatan' => $id_pendapatan,
@@ -188,7 +193,7 @@ if (isset($_POST['insert_pendapatan'])) {
             'total_barang' => mysqli_real_escape_string($koneksi, $_POST['total_barang'][$index]),
         );
 
-        // Insert data ke tabel detail_pengeluaran
+        // Insert data ke tabel detail_pendapatan
         Insert_Data("detail_pendapatan", $detailData);
     }
 
@@ -196,6 +201,7 @@ if (isset($_POST['insert_pendapatan'])) {
     header("Location: " . $baseURL . "/index.php?link=pendapatan");
     exit();
 }
+
 
 if (isset($_POST['insert_pembelian'])) {
     // Ambil data dari form untuk tabel transaksi_pengeluaran
