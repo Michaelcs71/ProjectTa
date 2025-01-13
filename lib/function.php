@@ -118,6 +118,13 @@ function Update_Data($table, $data, ...$custom)
     }
 }
 
+function Tampil_Data_Cetak($endpoint)
+{
+    $url = "http://localhost/ProjectTa/webservice/api/$endpoint.php";
+    $json = file_get_contents($url);
+    return json_decode($json, true);
+}
+
 
 
 // function Update_Data($table, $data, $where)
