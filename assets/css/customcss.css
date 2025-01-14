@@ -271,3 +271,12 @@ table.dataTable > tbody > tr.child:hover {
   flex: 0 0 29.166667%; /* Lebar kustom: (3.5/12) * 100 */
   max-width: 29.166667%;
 }
+
+.text-currency {
+  display: inline-flex;
+  align-items: baseline;
+}
+.text-currency span {
+  margin-right: 4px;
+  font-weight: bold;
+}
