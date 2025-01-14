@@ -71,7 +71,7 @@ $totalUpah = array_reduce($filteredData, function ($carry, $item) {
                         <tbody>
                             <!-- Kategori Bahan Baku -->
                             <tr>
-                                <td colspan="3" style="font-weight: bold;">Bahan Baku</td>
+                                <td colspan="3" style="font-weight: bold;">Biaya Bahan Baku</td>
                             </tr>
                             <?php if (!empty($filteredData)): ?>
                                 <?php foreach ($filteredData as $item): ?>
@@ -88,7 +88,7 @@ $totalUpah = array_reduce($filteredData, function ($carry, $item) {
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                                 <tr>
-                                    <td colspan="2" style="font-weight: bold;">Total Bahan Baku</td>
+                                    <td colspan="2" style="font-weight: bold;">Total Biaya Bahan Baku</td>
                                     <td class="text-end" style="font-weight: bold;">
                                         <div class="text-currency">
                                             <span>Rp.</span>
@@ -104,7 +104,7 @@ $totalUpah = array_reduce($filteredData, function ($carry, $item) {
 
                             <!-- Kategori Overhead -->
                             <tr>
-                                <td colspan="3" style="font-weight: bold;">Overhead</td>
+                                <td colspan="3" style="font-weight: bold;">Biaya Overhead Pabrik</td>
                             </tr>
                             <?php if (!empty($filteredData)): ?>
                                 <?php foreach ($filteredData as $item): ?>
@@ -121,7 +121,7 @@ $totalUpah = array_reduce($filteredData, function ($carry, $item) {
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                                 <tr>
-                                    <td colspan="2" style="font-weight: bold;">Total Overhead</td>
+                                    <td colspan="2" style="font-weight: bold;">Total Biaya Overhead Pabrik</td>
                                     <td class="text-end" style="font-weight: bold;">
                                         <div class="text-currency">
                                             <span>Rp.</span>
@@ -137,7 +137,7 @@ $totalUpah = array_reduce($filteredData, function ($carry, $item) {
 
                             <!-- Total Upah -->
                             <tr>
-                                <td colspan="3" style="font-weight: bold;">Upah Tenaga Kerja</td>
+                                <td colspan="3" style="font-weight: bold;">Biaya Tenaga Kerja Langsung</td>
                             </tr>
                             <?php if (!empty($filteredData)): ?>
                                 <?php foreach ($filteredData as $item): ?>
