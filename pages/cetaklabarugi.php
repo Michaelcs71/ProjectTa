@@ -179,9 +179,6 @@ $totalHPP = $totalBahanBaku + $totalUpah + $totalOverhead;
                         </tbody>
                     </table>
 
-
-
-
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-primary" onclick="printReport()">Cetak</button>

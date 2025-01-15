@@ -2,7 +2,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Form Data pekerja</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Form Data Tenaga Kerja</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -21,11 +21,11 @@
                                 <label for="alamat_pekerja" class="form-label">Alamat</label>
                                 <input type="text" class="form-control" name="alamat" id="alamat_pekerja" placeholder="Kota/Kab, Rt../Rw.." required>
                             </div>
-                            <div class="mb-3">
-                                <label for="pengeluaran" class="form-label">Status</label>
+                            <div class="mb-3" hidden>
+                                <label for="" class="form-label">Status</label>
                                 <select data-trigger class="form-select" name="status" id="status">
-                                    <option selected disabled>Pilih Status</option>
-                                    <option value="Aktif">Aktif</option>
+                                    <option disabled>Pilih Status</option>
+                                    <option value="Aktif" selected>Aktif</option>
                                     <option value="Tidak Aktif">Tidak Aktif</option>
                                 </select>
                             </div>

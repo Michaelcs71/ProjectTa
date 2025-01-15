@@ -43,13 +43,10 @@ if (isset($login)) {
                             <div class="mb-4 mb-md-5 text-center">
                                 <a href="login.php" class="d-block auth-logo">
                                     <img src="../assets/images/icon.png" alt="" height="28" />
-                                    <span class="logo-txt">Sistem Informasi Desa Purworejo</span>
+                                    <span class="logo-txt">Sistem Keuangan Toko Sevenshop</span>
                                 </a>
                             </div>
                             <div class="auth-content my-auto">
-                                <!-- <div class="text-center">
-                                    <h5 class="mb-0">Selamat datang di Sistem Informasi Akuntansi Laundry</h5>
-                                </div> -->
                                 <form class="mt-4 pt-2" method="POST">
                                     <?php
                                     if (isset($_SESSION['register'])) {
@@ -71,11 +68,7 @@ if (isset($login)) {
                                             <div class="flex-grow-1">
                                                 <label class="form-label">Password</label>
                                             </div>
-                                            <div class="flex-shrink-0">
-                                                <div class="">
-                                                    <a href="auth-recoverpw.html" class="text-muted">Lupa password?</a>
-                                                </div>
-                                            </div>
+
                                         </div>
 
                                         <div class="input-group auth-pass-inputgroup">
@@ -85,16 +78,7 @@ if (isset($login)) {
                                             </button>
                                         </div>
                                     </div>
-                                    <div class="row mb-4">
-                                        <div class="col">
-                                            <div class="form-check">
-                                                <input class="form-check-input" name="remember" type="checkbox" id="remember-check" />
-                                                <label class="form-check-label" for="remember-check">
-                                                    Ingat Saya
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
+
                                     <div class="mb-3">
                                         <button class="btn btn-primary w-100 waves-effect waves-light" name="login" type="submit" ;>
                                             Log In
@@ -102,14 +86,6 @@ if (isset($login)) {
                                     </div>
                                 </form>
 
-                                <div class="mt-5 text-center">
-                                    <p class="text-muted mb-0">
-                                        Belum punya akun?
-                                        <a href="register.php" class="text-primary fw-semibold">
-                                            Daftar sekarang
-                                        </a>
-                                    </p>
-                                </div>
                             </div>
                         </div>
                     </div>

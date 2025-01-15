@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Form Data Pembelian</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Form Data Pembelian Material</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -19,23 +19,6 @@
                             ?>
                                 <option value="<?= $nama['id_supplier'] ?>"><?= $nama['nama_supplier'] ?></option>
                             <?php } ?>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="nama" class="form-label">Nama Akun</label>
-                        <select data-trigger class="form-select" name="nama_akun" id="namaakun" required>
-                            <option selected disabled>Masukkan Nama</option>
-                            <?php
-                            $queryGetNama = "SELECT * FROM master_akun";
-                            $getNama = mysqli_query($koneksi, $queryGetNama);
-                            while ($nama = mysqli_fetch_assoc($getNama)) {
-                            ?>
-                                <option value="<?= $nama['id_akun'] ?>">
-                                    <?= $nama['nama_akun'] ?>
-                                </option>
-                            <?php
-                            }
-                            ?>
                         </select>
                     </div>
                     <div class="mb-3">

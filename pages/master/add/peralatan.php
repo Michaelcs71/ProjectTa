@@ -2,7 +2,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Form Data peralatan</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Form Data Peralatan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -14,6 +14,7 @@
                                 <input type="text" class="form-control" name="nama_peralatan" id="nama_peralatan" required>
                             </div>
                             <div class="mb-2">
+                                <label for="" class="form-label">Satuan Peralatan</label>
                                 <select class=" form-control jumlah-barang" name="nama_satuan" required>
                                     <option selected disabled>Pilih Satuan</option>
                                     <?php

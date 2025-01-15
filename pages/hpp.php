@@ -33,7 +33,7 @@ if ($selectedMonth && $selectedYear) {
             <!-- Filter Form -->
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Laporan Harga Pokok Produksi</h4>
+                    <h4 class="card-title font-size-18">Laporan Harga Pokok Produksi</h4>
                 </div>
                 <div class="card-body">
                     <form method="POST">

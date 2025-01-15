@@ -22,23 +22,7 @@
                             <?php } ?>
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label for="nama" class="form-label">Nama Akun</label>
-                        <select data-trigger class="form-select" name="nama_akun" id="namaakun" required>
-                            <option selected disabled>Masukkan Nama</option>
-                            <?php
-                            $queryGetNama = "SELECT * FROM master_akun";
-                            $getNama = mysqli_query($koneksi, $queryGetNama);
-                            while ($nama = mysqli_fetch_assoc($getNama)) {
-                            ?>
-                                <option value="<?= $nama['id_akun'] ?>">
-                                    <?= $nama['nama_akun'] ?>
-                                </option>
-                            <?php
-                            }
-                            ?>
-                        </select>
-                    </div>
+
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="tanggal" class="form-label">Tanggal Setor</label>
@@ -86,7 +70,7 @@
                     <button type="button" id="tambahBarangJadiMasuk" class="btn btn-success btn-sm mb-3">+ Tambah</button>
                     <hr>
                     <div class="mb-3">
-                        <label for="total_upah" class="form-label"><strong>Total Pembelian</strong></label>
+                        <label for="total_upah" class="form-label"><strong>Total Upah</strong></label>
                         <input type="number" id="total-pembelian" class="form-control" name="total_upah" readonly>
                     </div>
                     <!-- Tombol Simpan -->

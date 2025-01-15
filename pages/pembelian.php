@@ -25,29 +25,17 @@ if ($selectedMonth && $selectedYear) {
 <div class="main-content">
     <div class="page-content">
         <div class="container-fluid">
-            <!-- start page title -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0 font-size-18">Data Pembelian Peralatan</h4>
-                    </div>
-                </div>
-            </div>
-            <!-- end page title -->
-
-
-
             <div class="row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">Data Pembelian Peralatan</h4>
+                            <h4 class="card-title font-size-18">Data Pembelian Peralatan</h4>
                         </div>
                         <div class="card-body">
 
                             <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal" data-bs-target="#insertModal">Tambah Data</button>
 
-                            <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover text-center">
+                            <table id="datatable" class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover text-center">
                                 <!-- Filter Form -->
                                 <div class="row mb-4">
                                     <div class="col-md-6">
@@ -77,7 +65,7 @@ if ($selectedMonth && $selectedYear) {
                                         <th>Tanggal</th>
                                         <th>Nama Supplier</th>
                                         <th>Total Biaya</th>
-                                        <th>Detail</th>
+                                        <th>Status</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -90,16 +78,17 @@ if ($selectedMonth && $selectedYear) {
                                             $tanggal = $j->tanggal;
                                             $namasupplier = $j->nama_supplier;
                                             $totalbiaya = $j->total_biaya;
+                                            $status = $j->status;
                                     ?>
                                             <tr>
                                                 <td><?= $no++ ?></td>
                                                 <td><?= $tanggal ?></td>
                                                 <td><?= $namasupplier ?></td>
                                                 <td class="text-end">Rp. <?= number_format($j->total_biaya, 2, ',', '.') ?></td>
+                                                <td><?= $status ?></td>
                                                 <td>
                                                     <button type="button" class="btn btn-primary" id="detailModal" data-bs-toggle="modal" data-bs-target="#detailModalpembelian" data-idpkrja="<?= $idPembelian ?>">Detail</button>
-                                                </td>
-                                                <td>
+
                                                     <button type="button" class="btn btn-primary" id="updateModal" data-bs-toggle="modal" data-bs-target="#updateModalpembelian" data-idpkrja="<?= $idPembelian ?>">Update</button>
                                                 </td>
                                             </tr>
@@ -124,16 +113,16 @@ if ($selectedMonth && $selectedYear) {
 
 <!-- Detail Modal -->
 <div class="modal fade" id="detailModalpembelian" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Detail Data Pembelian</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Detail Data Pembelian Peralatan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <table class="table table-bordered">
                     <thead>
-                        <tr>
+                        <tr class="text-center">
                             <th>Nomor</th>
                             <th>Nama</th>
                             <th>Jumlah</th>
@@ -199,24 +188,35 @@ if ($selectedMonth && $selectedYear) {
                 },
                 success: function(response) {
                     var data = JSON.parse(response);
+
+                    // Fungsi untuk memformat angka ke format nominal dengan Rp.
+                    function formatNominal(value) {
+                        return `Rp. ${new Intl.NumberFormat('id-ID', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }).format(value)}`;
+                    }
+
                     var rows = '';
                     data.forEach(function(item, index) {
                         rows += `
-                            <tr>
-                                <td>${index + 1}</td>
-                                <td>${item.nama_peralatan}</td>
-                                <td>${item.jumlah}</td>
-                                <td>${item.harga_satuan}</td>
-                                <td>${item.bulan_ekonomis}</td>
-                                <td>${item.nilai_penyusutan}</td>
-                                <td>${item.akhir_periode_penyusutan}</td>
-                                <td>${item.sub_total}</td>
-                            </tr>
-                        `;
+                    <tr class="text-center">
+                        <td>${index + 1}</td>
+                        <td>${item.nama_peralatan}</td>
+                        <td>${item.jumlah}</td>
+                        <td class="text-end">${formatNominal(item.harga_satuan)}</td>
+                        <td>${item.bulan_ekonomis}</td>
+                        <td class="text-end">${formatNominal(item.nilai_penyusutan)}</td>
+                        <td>${item.akhir_periode_penyusutan}</td>
+                        <td class="text-end">${formatNominal(item.sub_total)}</td>
+                    </tr>
+                `;
                     });
                     $('#detail_data_pengeluaran').html(rows);
                 }
             });
         });
+
+
     });
 </script>

@@ -21,80 +21,70 @@ if ($data === null) {
 ?>
 
 <div class="main-content">
-    <div class="page-content">
-        <div class="container-fluid">
-            <!-- start page title -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0 font-size-18">Data Pekerja</h4>
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title font-size-18">Data Tenaga Pekerja</h4>
+                    </div>
+                    <div class="card-body">
+                        <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal"
+                            data-bs-target="#insertModal">Tambah Data</button>
+
+                        <table id="datatable"
+                            class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nomor</th>
+                                    <th>Nama Pekerja</th>
+                                    <th>No Telepon</th>
+                                    <th>Alamat</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $data = Tampil_Data("pekerja");
+                                $no = 1;
+                                if ($data !== null) {
+                                    foreach ($data as $j) {
+                                        $idpekerja = $j->id_pekerja;
+                                        $namapekerja = $j->nama_pekerja;
+                                        $notelp = $j->no_telpon;
+                                        $alamat = $j->alamat;
+                                        $status = $j->status;
+                                ?>
+                                        <tr>
+                                            <td><?= $no++ ?></td>
+                                            <td><?= $namapekerja ?></td>
+                                            <td><?= $notelp ?></td>
+                                            <td><?= $alamat ?></td>
+                                            <td><?= $status ?></td>
+                                            <td>
+                                                <button type="button" class="btn btn-primary" id="updateModal"
+                                                    data-bs-toggle="modal" data-bs-target="#updateModalPekerja"
+                                                    data-idpkrja="<?= $idpekerja ?>" data-nmpkrja="<?= $namapekerja ?>"
+                                                    data-notel="<?= $notelp ?>" data-almt="<?= $alamat ?>"
+                                                    data-stts="<?= $status ?>">Update</button>
+
+                                            </td>
+                                        </tr>
+                                <?php
+                                    }
+                                }
+                                ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
-            <!-- end page title -->
+                <!-- end card -->
+            </div> <!-- end col -->
+        </div> <!-- end row -->
+    </div> <!-- container-fluid -->
 
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4 class="card-title">Data Pekerja</h4>
-                        </div>
-                        <div class="card-body">
-                            <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal"
-                                data-bs-target="#insertModal">Tambah Data</button>
-
-                            <table id="datatable-buttons"
-                                class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Nomor</th>
-                                        <th>Nama Pekerja</th>
-                                        <th>No Telepon</th>
-                                        <th>Alamat</th>
-                                        <th>Status</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    $data = Tampil_Data("pekerja");
-                                    $no = 1;
-                                    if ($data !== null) {
-                                        foreach ($data as $j) {
-                                            $idpekerja = $j->id_pekerja;
-                                            $namapekerja = $j->nama_pekerja;
-                                            $notelp = $j->no_telpon;
-                                            $alamat = $j->alamat;
-                                            $status = $j->status;
-                                    ?>
-                                            <tr>
-                                                <td><?= $no++ ?></td>
-                                                <td><?= $namapekerja ?></td>
-                                                <td><?= $notelp ?></td>
-                                                <td><?= $alamat ?></td>
-                                                <td><?= $status ?></td>
-                                                <td>
-                                                    <button type="button" class="btn btn-primary" id="updateModal"
-                                                        data-bs-toggle="modal" data-bs-target="#updateModalPekerja"
-                                                        data-idpkrja="<?= $idpekerja ?>" data-nmpkrja="<?= $namapekerja ?>"
-                                                        data-notel="<?= $notelp ?>" data-almt="<?= $alamat ?>"
-                                                        data-stts="<?= $status ?>">Update</button>
-
-                                                </td>
-                                            </tr>
-                                    <?php
-                                        }
-                                    }
-                                    ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <!-- end card -->
-                </div> <!-- end col -->
-            </div> <!-- end row -->
-        </div> <!-- container-fluid -->
-    </div>
 </div>
 
 

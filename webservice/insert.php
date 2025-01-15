@@ -295,6 +295,7 @@ if (isset($_POST['insert_pembelian_overhead'])) {
         'tanggal' => mysqli_real_escape_string($koneksi, $_POST['tanggal_pembelian']),
         'total' => mysqli_real_escape_string($koneksi, $_POST['total_pembelian']),
         'id_akun' => mysqli_real_escape_string($koneksi, $_POST['nama_akun']),
+        'status' => mysqli_real_escape_string($koneksi, $_POST['status']),
         'date_created' => $time,
     );
 

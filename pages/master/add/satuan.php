@@ -10,7 +10,7 @@
                     <div class="modal-body">
                         <form>
                             <div class="mb-3">
-                                <label for="" class="form-label">Nama satuan</label>
+                                <label for="" class="form-label">Nama Satuan</label>
                                 <input type="text" class="form-control" name="nama_satuan" id="" required>
                             </div>
                             <div class="mb-3" hidden>

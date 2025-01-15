@@ -15,13 +15,13 @@
                 </li>
                 <li>
                     <a href="index.php?link=pendapatan">
-                        <i data-feather="home"></i>
+                        <i data-feather="dollar-sign"></i>
                         <span data-key="t-dashboard">Pendapatan</span>
                     </a>
                 </li>
                 <li>
                     <a href="javascript: void(0);" class="has-arrow">
-                        <i data-feather="users"></i>
+                        <i data-feather="shopping-cart"></i>
                         <span data-key="t-authentication">Pembelian</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
@@ -39,7 +39,7 @@
                 </li>
                 <li>
                     <a href="javascript: void(0);" class="has-arrow">
-                        <i data-feather="users"></i>
+                        <i data-feather="box"></i>
                         <span data-key="t-authentication">Stok</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
@@ -54,7 +54,7 @@
                 </li>
                 <li>
                     <a href="javascript: void(0);" class="has-arrow">
-                        <i data-feather="users"></i>
+                        <i data-feather="file-text"></i>
                         <span data-key="t-authentication">Laporan</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
@@ -72,7 +72,7 @@
                 </li>
                 <li>
                     <a href="javascript: void(0);" class="has-arrow">
-                        <i data-feather="users"></i>
+                        <i data-feather="database"></i>
                         <span data-key="t-authentication">Data Master</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
@@ -82,12 +82,12 @@
                         <li>
                             <a href="index.php?link=supplier" data-key="t-login">Supplier</a>
                         </li>
-                        <li>
+                        <!-- <li>
                             <a href="index.php?link=akun" data-key="t-login">Akun</a>
-                        </li>
-                        <li>
+                        </li> -->
+                        <!-- <li>
                             <a href="index.php?link=kategori" data-key="t-login">Kategori</a>
-                        </li>
+                        </li> -->
                         <li>
                             <a href="index.php?link=platform" data-key="t-login">Platform</a>
                         </li>

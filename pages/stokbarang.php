@@ -24,21 +24,11 @@ if ($data === null) {
 <div class="main-content">
     <div class="page-content">
         <div class="container-fluid">
-            <!-- start page title -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0 font-size-18">Data Stok Barang Jadi</h4>
-                    </div>
-                </div>
-            </div>
-            <!-- end page title -->
-
             <div class="row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">Data Stok Barang Jadi</h4>
+                            <h4 class="card-title font-size-18">Data Stok Barang Jadi</h4>
                         </div>
                         <div class="card-body">
                             <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal"
@@ -103,7 +93,7 @@ if ($data === null) {
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Detail Data stokbarang</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Detail Data Masuk Stok Barang Jadi</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -131,7 +121,7 @@ if ($data === null) {
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Detail Data stokbarang</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Detail Data Keluar Stok Barang Jadi</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">

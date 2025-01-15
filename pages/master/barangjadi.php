@@ -23,21 +23,11 @@ if ($data === null) {
 <div class="main-content">
     <div class="page-content">
         <div class="container-fluid">
-            <!-- start page title -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0 font-size-18">Data Barang Jadi</h4>
-                    </div>
-                </div>
-            </div>
-            <!-- end page title -->
-
             <div class="row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">Data Barang Jadi</h4>
+                            <h4 class="card-title font-size-18">Data Barang Jadi</h4>
                         </div>
                         <div class="card-body">
                             <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal"
@@ -55,7 +45,7 @@ if ($data === null) {
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody class="text-center">
                                     <?php
                                     $data = Tampil_Data("barangjadi");
                                     $no = 1;
@@ -70,7 +60,7 @@ if ($data === null) {
                                             <tr>
                                                 <td><?= $no++ ?></td>
                                                 <td><?= $namabarangjadi ?></td>
-                                                <td><?= $hargaterendah ?></td>
+                                                <td class="text-end">Rp. <?= number_format($hargaterendah, 2, ',', '.') ?></td>
                                                 <td><?= $persentaseupah ?></td>
                                                 <td><?= $status ?></td>
                                                 <td>

@@ -25,21 +25,11 @@ if ($data === null) {
 <div class="main-content">
     <div class="page-content">
         <div class="container-fluid">
-            <!-- start page title -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0 font-size-18">Data stokmaterial</h4>
-                    </div>
-                </div>
-            </div>
-            <!-- end page title -->
-
             <div class="row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">Data Stok Bahan Material</h4>
+                            <h4 class="card-title font-size-18">Data Stok Bahan Material</h4>
                         </div>
                         <div class="card-body">
                             <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal"

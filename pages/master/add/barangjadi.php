@@ -2,7 +2,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Form Data Bahan Material</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Form Data Barang Jadi</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -10,7 +10,7 @@
                     <div class="modal-body">
                         <form>
                             <div class="mb-3">
-                                <label for="nama_barangjadi" class="form-label">Nama Bahan Material</label>
+                                <label for="nama_barangjadi" class="form-label">Nama Barang Jadi</label>
                                 <input type="text" class="form-control" name="nama_barangjadi" id="nama_barangjadi" required>
                             </div>
                             <div class="mb-3">

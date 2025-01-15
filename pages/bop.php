@@ -44,18 +44,9 @@ if ($data === null) {
             <!-- start page title -->
             <div class="row">
                 <div class="col-12">
-                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0 font-size-18">Data Biaya Overhead</h4>
-                    </div>
-                </div>
-            </div>
-            <!-- end page title -->
-
-            <div class="row">
-                <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">Data Biaya Overhead</h4>
+                            <h4 class="card-title font-size-18">Data Biaya Overhead</h4>
                         </div>
                         <div class="card-body">
                             <div class="row mb-4">
@@ -89,7 +80,7 @@ if ($data === null) {
                                         <th>Nomor</th>
                                         <th>Tanggal</th>
                                         <th>Total Biaya</th>
-                                        <th>Detail</th>
+                                        <th>Status</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -102,17 +93,19 @@ if ($data === null) {
                                             $idperlengkapan = $j->id_pengeluaran_overhead;
                                             $tanggal = $j->tanggal;
                                             $totalbiaya = $j->total;
+                                            $status = $j->status;
+
                                     ?>
                                             <tr>
                                                 <td><?= $no++ ?></td>
                                                 <td><?= $tanggal ?></td>
                                                 <td class="text-end">Rp. <?= number_format($j->total, 2, ',', '.') ?></td>
+                                                <td><?= $status ?></td>
                                                 <td>
                                                     <button type="button" class="btn btn-primary" id="detailModal"
                                                         data-bs-toggle="modal" data-bs-target="#detailModalperlengkapan"
                                                         data-idpkrja="<?= $idperlengkapan ?>">Detail</button>
-                                                </td>
-                                                <td>
+
                                                     <button type="button" class="btn btn-primary" id="updateModal"
                                                         data-bs-toggle="modal" data-bs-target="#updateModalperlengkapan"
                                                         data-idpkrja="<?= $idperlengkapan ?>" data-nmperlengkapan="<?= $namaperlengkapan ?>" data-deskripsi="<?= $deskripsi ?>"

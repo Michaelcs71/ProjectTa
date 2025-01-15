@@ -14,6 +14,8 @@
                                 <input type="text" class="form-control" name="nama_bahanmaterial" id="nama_bahanmaterial" required>
                             </div>
                             <div class="mb-2">
+                                <label for="nama_bahanmaterial" class="form-label">Pilih Satuan</label>
+
                                 <select class=" form-control jumlah-barang" name="nama_satuan" required>
                                     <option selected disabled>Pilih Satuan</option>
                                     <?php
@@ -30,7 +32,7 @@
                                 </select>
                             </div>
                             <div class="mb-3" hidden>
-                                <label for="pengeluaran" class="form-label">Status</label>
+                                <label for="" class="form-label">Status</label>
                                 <select data-trigger class="form-select" name="status" id="status">
                                     <option disabled>Pilih Status</option>
                                     <option value="Aktif" selected>Aktif</option>

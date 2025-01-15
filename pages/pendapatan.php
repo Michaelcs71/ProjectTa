@@ -77,7 +77,7 @@ if (empty($data)) {
                             <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal"
                                 data-bs-target="#insertModal">Tambah Data</button>
 
-                            <table id="datatable-buttons"
+                            <table id="datatable"
                                 class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover text-center">
                                 <thead class="table-light">
                                     <tr>
@@ -85,7 +85,7 @@ if (empty($data)) {
                                         <th>Nama Platform</th>
                                         <th>Bulan Pendapatan</th>
                                         <th>Total Pendapatan</th>
-                                        <!-- <th>Kode Akun</th> -->
+                                        <th>Status</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -98,14 +98,14 @@ if (empty($data)) {
                                             $namakategori = $j->nama_platform;
                                             $status = $j->tanggal_pendapatan;
                                             $deskripsi = $j->total_pendapatan;
-                                            // $namaakun = $j->id_akun;
+                                            $namaakun = $j->status;
                                     ?>
                                             <tr>
                                                 <td><?= $no++ ?></td>
                                                 <td><?= $namakategori ?></td>
                                                 <td><?= $status ?></td>
                                                 <td class="text-end">Rp. <?= number_format($j->total_pendapatan, 2, ',', '.') ?></td>
-                                                <!-- <td><?= $namaakun ?></td> -->
+                                                <td><?= $namaakun ?></td>
                                                 <td>
                                                     <button type="button" class="btn btn-primary" id="detailModal"
                                                         data-bs-toggle="modal" data-bs-target="#detailModalPendapatan"

@@ -34,11 +34,12 @@ if ($filteredData) {
     foreach ($filteredData as $j) {
         if (strtolower($j->keterangan) === 'total pendapatan') {
             $totalPendapatan += $j->total;
-        } else {
+        } elseif (strtolower($j->keterangan) === 'total hpp') {
             $totalBiaya += $j->total;
         }
     }
 }
+
 
 // Calculate laba/rugi
 $totalLabaRugi = $totalPendapatan - $totalBiaya;
@@ -58,7 +59,7 @@ $statusLabaRugi = $totalLabaRugi >= 0 ? "Laba" : "Rugi";
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">Laporan Rugi Laba</h4>
+                            <h4 class="card-title font-size-18">Laporan Rugi Laba</h4>
                         </div>
 
                         <div class="card-body">
