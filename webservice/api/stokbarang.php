@@ -4,17 +4,33 @@ include "../config.php";
 $hasil = mysqli_query($koneksi, "SELECT 
     mbj.id_barang_jadi,
     mbj.nama_barang,
-    COALESCE(SUM(dbjm.jumlah), 0) - COALESCE(SUM(dp.total_barang), 0) AS jumlah_stok
+    COALESCE(stok_masuk.total_masuk, 0) AS stok_masuk,
+    COALESCE(stok_keluar.total_keluar, 0) AS stok_keluar,
+    COALESCE(stok_masuk.total_masuk, 0) - COALESCE(stok_keluar.total_keluar, 0) AS jumlah_stok
 FROM 
     master_barang_jadi mbj
 LEFT JOIN 
-    detail_barang_jadi_masuk dbjm ON mbj.id_barang_jadi = dbjm.id_barang_jadi
+    (
+        SELECT 
+            id_barang_jadi, 
+            SUM(jumlah) AS total_masuk 
+        FROM 
+            detail_barang_jadi_masuk 
+        GROUP BY 
+            id_barang_jadi
+    ) AS stok_masuk ON mbj.id_barang_jadi = stok_masuk.id_barang_jadi
 LEFT JOIN 
-    detail_pendapatan dp ON mbj.id_barang_jadi = dp.id_barang_jadi
-GROUP BY 
-    mbj.id_barang_jadi, mbj.nama_barang
+    (
+        SELECT 
+            id_barang_jadi, 
+            SUM(total_barang) AS total_keluar 
+        FROM 
+            detail_pendapatan 
+        GROUP BY 
+            id_barang_jadi
+    ) AS stok_keluar ON mbj.id_barang_jadi = stok_keluar.id_barang_jadi
 ORDER BY 
-    mbj.nama_barang ASC;");
+    mbj.id_barang_jadi ASC;");
 
 $jsonRespon = array();
 if (mysqli_num_rows($hasil) > 0) {

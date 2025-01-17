@@ -1,7 +1,23 @@
 <?php
 include "../config.php";
 
-$hasil = mysqli_query($koneksi, "WITH bahan_baku_per_produk AS (
+// Mengambil parameter bulan dan tahun dari URL (GET)
+$month = isset($_GET['month']) ? $_GET['month'] : date('m', strtotime('-1 month'));  // Default bulan lalu
+$year = isset($_GET['year']) ? $_GET['year'] : date('Y', strtotime('-1 month'));      // Default tahun bulan lalu
+
+// Membuat kondisi untuk periode berdasarkan bulan dan tahun yang dipilih
+$whereCondition = '';
+if ($month && $year) {
+    $whereCondition = "AND DATE_FORMAT(tbm.tanggal, '%Y-%m') = '$year-$month'";
+} elseif ($year) {
+    $whereCondition = "AND DATE_FORMAT(tbm.tanggal, '%Y') = '$year'";
+} elseif ($month) {
+    $whereCondition = "AND DATE_FORMAT(tbm.tanggal, '%m') = '$month'";
+}
+
+// Query untuk mengambil data berdasarkan filter bulan dan tahun
+$hasil = mysqli_query($koneksi, "
+WITH bahan_baku_per_produk AS (
     SELECT 
         tpm.id_penggunaan_material,
         dpm.id_bahan_material,
@@ -23,6 +39,7 @@ produk_terkait AS (
     FROM detail_barang_jadi_masuk dj
     LEFT JOIN transaksi_barang_jadi_masuk tbm
         ON dj.id_barang_masuk = tbm.id_barang_masuk
+    $whereCondition
 ),
 total_bahan_per_produk AS (
     SELECT 

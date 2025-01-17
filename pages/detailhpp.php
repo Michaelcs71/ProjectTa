@@ -103,7 +103,7 @@ if ($selectedMonth && $selectedYear) {
                                     <?php
                                         }
                                     } else {
-                                        echo "<tr><td colspan='7' class='text-center'>Tidak ada data untuk bulan dan tahun yang dipilih.</td></tr>";
+                                        echo "<tr><td colspan='8' class='text-center'>Tidak ada data untuk bulan dan tahun yang dipilih.</td></tr>";
                                     }
                                     ?>
                                 </tbody>

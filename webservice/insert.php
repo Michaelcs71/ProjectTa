@@ -397,7 +397,6 @@ if (isset($_POST['insert_stokbarangjadi'])) {
     // Data umum untuk transaksi
     $transaksiData = array(
         'id_pekerja' => mysqli_real_escape_string($koneksi, $_POST['nama_pekerja']),
-        'id_akun' => mysqli_real_escape_string($koneksi, $_POST['nama_akun']),
         'tanggal' => mysqli_real_escape_string($koneksi, $_POST['tanggal']),
         'total_upah' => mysqli_real_escape_string($koneksi, $_POST['total_upah']),
         'keterangan' => mysqli_real_escape_string($koneksi, $_POST['keterangan']),
