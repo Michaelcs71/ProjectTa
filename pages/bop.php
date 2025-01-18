@@ -4,7 +4,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/lib/function.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/pages/add/bop.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/pages/update/bop.php";
 
-
 $data = Tampil_Data("bop");
 
 // Get selected month and year from request
@@ -25,17 +24,6 @@ if ($selectedMonth && $selectedYear) {
 } else {
     $filteredData = $data; // Show all data if no filter is applied
 }
-
-
-
-
-
-// Debugging to ensure data fetch is correct
-if ($data === null) {
-    echo "Data is null.";
-} else {
-    echo "Data fetched successfully.";
-}
 ?>
 
 <div class="main-content">
@@ -46,7 +34,7 @@ if ($data === null) {
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title font-size-18">Data Biaya Overhead</h4>
+                            <h4 class="card-title font-size-18">Data Biaya Overhead Tes</h4>
                         </div>
                         <div class="card-body">
                             <div class="row mb-4">
@@ -73,7 +61,7 @@ if ($data === null) {
                             </div>
                             <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal"
                                 data-bs-target="#insertModal">Tambah Data</button>
-                            <table id="datatable-buttons"
+                            <table id="datatable"
                                 class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover text-center">
                                 <thead class="table-light">
                                     <tr class="text-center">
@@ -86,15 +74,13 @@ if ($data === null) {
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $data = Tampil_Data("bop");
                                     $no = 1;
                                     if (!empty($filteredData)) {
-                                        foreach ($data as $j) {
+                                        foreach ($filteredData as $j) { // Use $filteredData here
                                             $idperlengkapan = $j->id_pengeluaran_overhead;
                                             $tanggal = $j->tanggal;
                                             $totalbiaya = $j->total;
                                             $status = $j->status;
-
                                     ?>
                                             <tr>
                                                 <td><?= $no++ ?></td>
@@ -112,8 +98,14 @@ if ($data === null) {
                                                         data-stts="<?= $status ?>" data-namaakun="<?= $namaakun ?>">Update</button>
                                                 </td>
                                             </tr>
-                                    <?php
+                                        <?php
                                         }
+                                    } else {
+                                        ?>
+                                        <tr>
+                                            <td colspan="5">Tidak ada data ditemukan untuk bulan dan tahun yang dipilih.</td>
+                                        </tr>
+                                    <?php
                                     }
                                     ?>
                                 </tbody>
@@ -126,6 +118,7 @@ if ($data === null) {
         </div> <!-- container-fluid -->
     </div>
 </div>
+
 
 <!-- Detail Modal -->
 <div class="modal fade" id="detailModalperlengkapan" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -156,37 +149,9 @@ if ($data === null) {
 
 <script>
     $(document).ready(function() {
-        $(document).on('click', '#updateModal', function() {
-            var varidoverhead = $(this).data('idpkrja');
-            var varnamaperlengkapan = $(this).data('nmperlengkapan');
-            var vardeskripsi = $(this).data('deskripsi');
-            var varstatus = $(this).data('stts');
-            var varnamakun = $(this).data('namaakun');
 
-            $('#id_bhn_splr').val(varidoverhead);
-            $('#nmplat').val(varnamaperlengkapan);
-            $('#totalpend').val(vardeskripsi);
-            $('#tglpend').val(varstatus);
-            $('#nmakun').val(varnamakun);
-        });
 
-        $(document).on('click', '#deleteConfirmation', function() {
-            var kdpesnan = $(this).data('kdpsn');
-            Swal.fire({
-                title: "Apa anda yakin?",
-                text: "Data yang dihapus tidak dapat dikembalikan!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#2ab57d",
-                cancelButtonColor: "#fd625e",
-                confirmButtonText: "Hapus",
-                cancelButtonText: "Batalkan",
-            }).then(function(result) {
-                if (result.isConfirmed) {
-                    location.assign("<?= $baseURL ?>/index.php?link=laundry_pesanan&aksi=delete&id=" + kdpesnan);
-                }
-            });
-        });
+
 
         $(document).on('click', '#detailModal', function() {
             var varidoverhead = $(this).data('idpkrja');
@@ -201,17 +166,30 @@ if ($data === null) {
                 success: function(response) {
                     var data = JSON.parse(response);
                     var rows = '';
-                    data.forEach(function(item, index) {
-                        rows += `
+                    var currencyFormat = new Intl.NumberFormat('id-ID', {
+                        style: 'currency',
+                        currency: 'IDR'
+                    });
+
+                    if (data.length > 0) {
+                        data.forEach(function(item, index) {
+                            rows += `
                             <tr>
                                 <td>${index + 1}</td>
                                 <td>${item.nama_overhead}</td>
-                                <td>${item.biaya_overhead}</td>
+                                <td class="text-end">${currencyFormat.format(item.biaya_overhead)}</td>
                                 <td>${item.keterangan}</td>
                             </tr>
                         `;
-                    });
+                        });
+                    } else {
+                        rows = `<tr><td colspan="5" class="text-center">Tidak ada data detail.</td></tr>`;
+                    }
+
                     $('#detail_data_pengeluaran').html(rows);
+                },
+                error: function() {
+                    $('#detail_data_pengeluaran').html('<tr><td colspan="3" class="text-center">Error saat mengambil data.</td></tr>');
                 }
             });
         });

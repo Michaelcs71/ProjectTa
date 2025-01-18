@@ -18,6 +18,8 @@ if (isset($_GET['link'])) {
         $title = "Form Login | ";
     } elseif (($_GET['link']) == 'pendapatan') {
         $title = "Transaksi Pendapatan | ";
+    } elseif (($_GET['link']) == 'detailhpp') {
+        $title = "HPP Per Produk | ";
     } elseif (($_GET['link']) == 'pembelian') {
         $title = "Transaksi Peralatan | ";
     } elseif (($_GET['link']) == 'bop') {
@@ -42,7 +44,7 @@ if (isset($_GET['link'])) {
         $title = "Master Platform | ";
     } elseif (($_GET['link']) == 'bahanmaterial') {
         $title = "Master Bahan Material | ";
-    } elseif (($_GET['link']) == 'barangajadi') {
+    } elseif (($_GET['link']) == 'barangjadi') {
         $title = "Master Barang Jadi | ";
     } elseif (($_GET['link']) == 'satuan') {
         $title = "Master Satuan | ";

@@ -8,7 +8,8 @@ if (isset($_GET['id'])) {
     $hasil = mysqli_query($koneksi, "SELECT 
     tpbm.tanggal_pengambilan, 
     tpbm.estimasi_tanggal_selesai, 
-    tpbm.target_jumlah, 
+    tpbm.target_jumlah,
+    mbj.nama_barang, 
     dpbm.jumlah,
     ms.nama_pekerja
 FROM 
@@ -19,8 +20,19 @@ LEFT JOIN
 LEFT JOIN 
     master_pekerja ms
     ON tpbm.id_pekerja = ms.id_pekerja
+LEFT JOIN
+    master_barang_jadi mbj 
+    ON tpbm.id_barang_jadi = mbj.id_barang_jadi  
 WHERE 
-    dpbm.id_bahan_material =  '$idBahanMaterial'");
+    dpbm.id_bahan_material = '$idBahanMaterial'  
+GROUP BY
+    tpbm.tanggal_pengambilan, 
+    tpbm.estimasi_tanggal_selesai, 
+    tpbm.target_jumlah,
+    mbj.nama_barang,
+    dpbm.jumlah,
+    ms.nama_pekerja;  
+");
 
     $jsonRespon = array();
     if (mysqli_num_rows($hasil) > 0) {

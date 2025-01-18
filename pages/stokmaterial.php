@@ -137,6 +137,7 @@ if ($data === null) {
                             <th>Nomor</th>
                             <th>Nama Pekerja</th>
                             <th>Tanggal Pengambilan</th>
+                            <th>Nama Barang yang Dibuat</th>
                             <th>Jumlah Diambil</th>
                             <th>Estimasi Tanggal Jadi</th>
                             <th>Target Jadi</th>
@@ -250,6 +251,7 @@ if ($data === null) {
                             <td>${index + 1}</td>
                             <td>${item.nama_pekerja}</td>
                             <td>${item.tanggal_pengambilan}</td>
+                            <td>${item.nama_barang}</td>
                             <td>${item.jumlah}</td>
                             <td>${item.estimasi_tanggal_selesai}</td>
                             <td>${item.target_jumlah}</td>

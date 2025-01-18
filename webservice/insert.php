@@ -294,7 +294,6 @@ if (isset($_POST['insert_pembelian_overhead'])) {
     $transaksiData = array(
         'tanggal' => mysqli_real_escape_string($koneksi, $_POST['tanggal_pembelian']),
         'total' => mysqli_real_escape_string($koneksi, $_POST['total_pembelian']),
-        'id_akun' => mysqli_real_escape_string($koneksi, $_POST['nama_akun']),
         'status' => mysqli_real_escape_string($koneksi, $_POST['status']),
         'date_created' => $time,
     );
@@ -362,7 +361,6 @@ if (isset($_POST['insert_stokkeluar'])) {
     // Data umum untuk transaksi
     $transaksiData = array(
         'id_pekerja' => mysqli_real_escape_string($koneksi, $_POST['nama_pekerja']),
-        'id_akun' => mysqli_real_escape_string($koneksi, $_POST['nama_akun']),
         'id_barang_jadi' => mysqli_real_escape_string($koneksi, $_POST['nama_barang']),
         'tanggal_pengambilan' => mysqli_real_escape_string($koneksi, $_POST['tanggal_pengambilan']),
         'estimasi_tanggal_selesai' => mysqli_real_escape_string($koneksi, $_POST['estimasi_tanggal_jadi']),
@@ -411,15 +409,35 @@ if (isset($_POST['insert_stokbarangjadi'])) {
 
     // Loop untuk setiap barang dalam detail_pengeluaran
     foreach ($_POST['nama_barang'] as $index => $nama_barang) {
+        $jumlah_barang = mysqli_real_escape_string($koneksi, $_POST['jumlah_barang'][$index]);
+        $subtotal_upah = mysqli_real_escape_string($koneksi, $_POST['subtotal'][$index]);
+
         $detailData = array(
             'id_barang_masuk' => $id_barang_masuk,
             'id_barang_jadi' => mysqli_real_escape_string($koneksi, $nama_barang),
-            'jumlah' => mysqli_real_escape_string($koneksi, $_POST['jumlah_barang'][$index]),
-            'subtotal_upah' => mysqli_real_escape_string($koneksi, $_POST['subtotal'][$index]),
+            'jumlah' => $jumlah_barang,
+            'subtotal_upah' => $subtotal_upah,
         );
 
         // Insert data ke tabel detail_pengeluaran
         Insert_Data("detail_barang_jadi_masuk", $detailData);
+
+        // Kurangi target barang di tabel transaksi_penggunaan_bahan_material
+        $id_pekerja = mysqli_real_escape_string($koneksi, $_POST['nama_pekerja']);
+        $queryUpdateTarget = "
+           UPDATE transaksi_penggunaan_bahan_material
+            SET target_jumlah = 
+                GREATEST(target_jumlah - 
+                    (CASE 
+                        WHEN target_jumlah > 0 AND $jumlah_barang > 0 THEN 
+                            LEAST(target_jumlah, $jumlah_barang) 
+                        ELSE 0
+                    END), 0)
+            WHERE id_pekerja = $id_pekerja AND id_barang_jadi = $nama_barang
+        ";
+
+        // Eksekusi query update
+        mysqli_query($koneksi, $queryUpdateTarget);
     }
 
     // Redirect setelah insert selesai

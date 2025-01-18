@@ -1,13 +1,9 @@
 <?php
 include "../config.php";
 
-$hasil = mysqli_query($koneksi, "SELECT 
-    tp.*, 
-    ma.nama_akun
+$hasil = mysqli_query($koneksi, "SELECT *
 FROM 
-    transaksi_pengeluaran_overhead tp
-LEFT JOIN 
-    master_akun ma ON ma.id_akun = tp.id_akun;");
+    transaksi_pengeluaran_overhead tp;");
 
 $jsonRespon = array();
 if (mysqli_num_rows($hasil) > 0) {
