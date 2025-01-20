@@ -35,7 +35,7 @@ foreach ($filteredData as $item) {
         $totalPendapatan += $item->total;
     } elseif ($item->keterangan === 'Biaya Bahan Baku') {
         $totalBahanBaku += $item->total;
-    } elseif ($item->keterangan === 'Biaya Tenaga Kerja') {
+    } elseif ($item->keterangan === 'Biaya Tenaga Kerja Langsung') {
         $totalUpah += $item->total;
     } elseif ($item->keterangan === 'Biaya Overhead') {
         $totalOverhead += $item->total;
@@ -51,12 +51,12 @@ $totalHPP = $totalBahanBaku + $totalUpah + $totalOverhead;
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Laporan Harga Pokok Produksi</h5>
+                <h5 class="modal-title">Laporan Laba Rugi</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="printArea">
                 <h4 class="text-center">PT. Sevenshop</h4>
-                <h5 class="text-center">Laporan Harga Pokok Produksi</h5>
+                <h5 class="text-center">Laporan Laba Rugi</h5>
                 <h6 class="text-center">
                     Periode: <?= htmlspecialchars(($selectedYear ?? '') . '-' . ($selectedMonth ?? ''), ENT_QUOTES, 'UTF-8') ?>
                 </h6>
@@ -136,7 +136,7 @@ $totalHPP = $totalBahanBaku + $totalUpah + $totalOverhead;
 
                             <!-- Biaya Tenaga Kerja -->
                             <tr>
-                                <td colspan="2">Biaya Tenaga Kerja</td>
+                                <td colspan="2">Biaya Tenaga Kerja Langsung</td>
                                 <td class="center-align" style="font-weight: bold;">
                                     <div class="text-currency">
                                         <span>Rp.</span>

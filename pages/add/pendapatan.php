@@ -14,7 +14,7 @@
                         <select data-trigger class="form-select" name="nama_platform" id="nama" required>
                             <option selected disabled>Masukkan Nama</option>
                             <?php
-                            $queryGetNama = "SELECT * FROM master_platform";
+                            $queryGetNama = "SELECT * FROM master_platform WHERE status = 'Aktif'";
                             $getNama = mysqli_query($koneksi, $queryGetNama);
                             while ($nama = mysqli_fetch_assoc($getNama)) {
                                 echo "<option value='{$nama['id_platform']}'>{$nama['nama_platform']}</option>";
@@ -32,20 +32,15 @@
                         <label for="" class="form-label">Tanggal Pendapatan</label>
                         <input type="date" class="form-control" name="tanggal_pendapatan" placeholder="Masukkan tanggal terakhir pada bulan yang dipilih" id="" required>
                     </div>
-                    <div class="mb-3" hidden>
-                        <label for="nama" class="form-label">Nama Akun</label>
-                        <select data-trigger class="form-select" name="nama_akun" id="namaakun" required>
-                            <option selected disabled>Masukkan Nama</option>
-                            <?php
-                            $queryGetNama = "SELECT * FROM master_akun";
-                            $getNama = mysqli_query($koneksi, $queryGetNama);
-                            while ($nama = mysqli_fetch_assoc($getNama)) {
-                                $selected = ($nama['id_akun'] == 401) ? 'selected' : '';
-                                echo "<option value='{$nama['id_akun']}' {$selected}>{$nama['nama_akun']}</option>";
-                            }
-                            ?>
+
+                    <div class="mb-3" style="display: none;">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" name="status" id="idstatus">
+                            <option value="Aktif" selected>Aktif</option>
+                            <option value="Tidak Aktif">Tidak Aktif</option>
                         </select>
                     </div>
+
 
                     <!-- Tambah Barang -->
                     <label class="form-label"><strong>Detail Barang Terjual</strong></label>
@@ -55,7 +50,7 @@
                                 <select class="form-control " name="nama_barang[]" required>
                                     <option selected disabled>Pilih Material</option>
                                     <?php
-                                    $queryGetNama = "SELECT * FROM master_barang_jadi";
+                                    $queryGetNama = "SELECT * FROM master_barang_jadi WHERE status = 'Aktif'";
                                     $getNama = mysqli_query($koneksi, $queryGetNama);
                                     while ($nama = mysqli_fetch_assoc($getNama)) {
                                         echo "<option value='{$nama['id_barang_jadi']}'>{$nama['nama_barang']}</option>";
@@ -122,7 +117,7 @@
                 <select class="form-control " name="nama_barang[]" required>
                     <option selected disabled>Pilih Material</option>
                     <?php
-                    $queryGetNama = "SELECT * FROM master_barang_jadi";
+                    $queryGetNama = "SELECT * FROM master_barang_jadi WHERE status = 'Aktif'";
                     $getNama = mysqli_query($koneksi, $queryGetNama);
                     while ($nama = mysqli_fetch_assoc($getNama)) {
                         echo "<option value='{$nama['id_barang_jadi']}'>{$nama['nama_barang']}</option>";

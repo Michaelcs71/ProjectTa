@@ -18,7 +18,6 @@ $hasil = mysqli_query($koneksi, "WITH overhead_detail AS (
     periode_biaya AS (
         SELECT DISTINCT
             DATE_FORMAT(DATE_ADD(opb.tanggal_periode, INTERVAL n.num MONTH), '%Y-%m') AS periode,
-            opb.id_peralatan AS id_overhead,
             SUM(opb.nilai_penyusutan) AS total_biaya
         FROM
             overhead_per_bulan opb
@@ -39,14 +38,12 @@ $hasil = mysqli_query($koneksi, "WITH overhead_detail AS (
         WHERE 
             DATE_ADD(opb.tanggal_periode, INTERVAL n.num MONTH) <= opb.akhir_periode_penyusutan
         GROUP BY 
-            DATE_FORMAT(DATE_ADD(opb.tanggal_periode, INTERVAL n.num MONTH), '%Y-%m'),
-            opb.id_peralatan
+            DATE_FORMAT(DATE_ADD(opb.tanggal_periode, INTERVAL n.num MONTH), '%Y-%m')
     ),
     overhead_dengan_periode AS (
         SELECT 
             pb.periode,
-            pb.id_overhead,
-            CONCAT('Nilai Penyusutan ', mp.nama_peralatan) AS nama_overhead,
+            'Nilai Penyusutan Peralatan' AS nama_overhead,
             pb.total_biaya,
             NULL AS total_jumlah,
             NULL AS id_bahan_material,
@@ -56,8 +53,6 @@ $hasil = mysqli_query($koneksi, "WITH overhead_detail AS (
             NULL AS total_upah
         FROM 
             periode_biaya pb
-        LEFT JOIN 
-            master_peralatan mp ON pb.id_overhead = mp.id_peralatan
     )
     SELECT * FROM overhead_dengan_periode
 
@@ -65,7 +60,6 @@ $hasil = mysqli_query($koneksi, "WITH overhead_detail AS (
 
     SELECT 
         DATE_FORMAT(tpo.tanggal, '%Y-%m') AS periode,
-        dpo.id_overhead,
         moh.nama_overhead,
         SUM(dpo.biaya_overhead) AS total_biaya,
         NULL AS total_jumlah,
@@ -84,7 +78,6 @@ $hasil = mysqli_query($koneksi, "WITH overhead_detail AS (
         dpo.biaya_overhead IS NOT NULL
     GROUP BY 
         DATE_FORMAT(tpo.tanggal, '%Y-%m'), 
-        dpo.id_overhead, 
         moh.nama_overhead
 ),
 bahan_baku_detail AS (
@@ -150,7 +143,6 @@ upah_tenaga_kerja_detail AS (
 )
 SELECT 
     periode,
-    id_overhead,
     nama_overhead,
     total_biaya,
     total_jumlah,
@@ -166,7 +158,6 @@ WHERE
 UNION ALL
 SELECT 
     periode,
-    id_overhead,
     nama_overhead,
     total_biaya,
     total_jumlah,
@@ -182,7 +173,6 @@ WHERE
 UNION ALL
 SELECT 
     periode,
-    id_overhead,
     nama_overhead,
     total_biaya,
     total_jumlah,
@@ -198,6 +188,7 @@ WHERE
 ORDER BY 
     periode, 
     COALESCE(nama_overhead, nama_bahan_material, nama_pekerja);
+
 
 ");
 

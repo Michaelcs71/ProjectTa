@@ -42,6 +42,7 @@ if ($data === null) {
                                         <th>Nomor</th>
                                         <th>Nama Barang</th>
                                         <th>Jumlah Stok </th>
+                                        <th>Jumlah Stok Sedang Diproses</th>
                                         <th>Detail</th>
                                     </tr>
                                 </thead>
@@ -53,13 +54,15 @@ if ($data === null) {
                                         foreach ($data as $j) {
                                             $idbarangjadi = $j->id_barang_jadi;
                                             $namapekerja = $j->nama_barang;
-                                            $tanggal = $j->jumlah_stok;
+                                            $jumlahstok = $j->jumlah_stok;
+                                            $barangproses = $j->barang_dalam_proses;
 
                                     ?>
                                             <tr>
                                                 <td><?= $no++ ?></td>
                                                 <td><?= $namapekerja ?></td>
-                                                <td><?= $tanggal ?></td>
+                                                <td><?= $jumlahstok ?></td>
+                                                <td><?= $barangproses ?></td>
                                                 <td>
                                                     <button type="button" class="btn btn-success" id="detailModal"
                                                         data-bs-toggle="modal" data-bs-target="#detailModalstokbarang"

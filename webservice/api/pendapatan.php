@@ -3,14 +3,11 @@ include "../config.php";
 
 $hasil = mysqli_query($koneksi, "SELECT 
     tp.*, 
-    ms.nama_platform, 
-    ma.id_akun
+    ms.nama_platform
 FROM 
     transaksi_pendapatan tp
 LEFT JOIN 
-    master_platform ms ON ms.id_platform = tp.id_platform
-LEFT JOIN 
-    master_akun ma ON ma.id_akun = tp.id_akun;");
+    master_platform ms ON ms.id_platform = tp.id_platform ;");
 
 $jsonRespon = array();
 if (mysqli_num_rows($hasil) > 0) {

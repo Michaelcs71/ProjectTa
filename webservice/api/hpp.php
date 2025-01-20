@@ -33,28 +33,65 @@ tenaga_kerja AS (
         DATE_FORMAT(tbm.tanggal, '%Y-%m')
 ),
 overhead AS (
-    -- Bagian overhead
-    SELECT
-        periode,
-        SUM(total_biaya) AS total_biaya_overhead
-    FROM (
+    WITH overhead_per_bulan AS (
         SELECT
-            DATE_FORMAT(po.tanggal, '%Y-%m') AS periode,
-            COALESCE(SUM(oh.nilai_penyusutan), 0) AS total_biaya
-        FROM transaksi_pengeluaran po
-        LEFT JOIN detail_pengeluaran oh 
-            ON po.id_pengeluaran = oh.id_pengeluaran
-        GROUP BY DATE_FORMAT(po.tanggal, '%Y-%m')
+            po.tanggal AS tanggal_periode,
+            DATE_ADD(po.tanggal, INTERVAL oh.bulan_ekonomis MONTH) AS akhir_periode_penyusutan,
+            oh.nilai_penyusutan
+        FROM 
+            transaksi_pengeluaran po
+        LEFT JOIN 
+            detail_pengeluaran oh ON po.id_pengeluaran = oh.id_pengeluaran
+    ),
+    periode_biaya AS (
+        SELECT
+            DATE_FORMAT(DATE_ADD(opb.tanggal_periode, INTERVAL n.num MONTH), '%Y-%m') AS periode,
+            opb.nilai_penyusutan
+        FROM
+            overhead_per_bulan opb
+        JOIN (
+            SELECT 0 AS num
+            UNION ALL SELECT 1
+            UNION ALL SELECT 2
+            UNION ALL SELECT 3
+            UNION ALL SELECT 4
+            UNION ALL SELECT 5
+            UNION ALL SELECT 6
+            UNION ALL SELECT 7
+            UNION ALL SELECT 8
+            UNION ALL SELECT 9
+            UNION ALL SELECT 10
+            UNION ALL SELECT 11
+        ) n ON DATE_ADD(opb.tanggal_periode, INTERVAL n.num MONTH) <= opb.akhir_periode_penyusutan
+    ),
+    total_biaya_overhead AS (
+        SELECT
+            p.periode,
+            SUM(p.nilai_penyusutan) AS total_biaya
+        FROM
+            periode_biaya p
+        GROUP BY
+            p.periode
         UNION ALL
         SELECT
             DATE_FORMAT(po.tanggal, '%Y-%m') AS periode,
             COALESCE(SUM(oh.biaya_overhead), 0) AS total_biaya
-        FROM transaksi_pengeluaran_overhead po
-        LEFT JOIN detail_pengeluaran_overhead oh 
-            ON po.id_pengeluaran_overhead = oh.id_pengeluaran_overhead
-        GROUP BY DATE_FORMAT(po.tanggal, '%Y-%m')
-    ) AS total_biaya_overhead
-    GROUP BY periode
+        FROM 
+            transaksi_pengeluaran_overhead po
+        LEFT JOIN 
+            detail_pengeluaran_overhead oh ON po.id_pengeluaran_overhead = oh.id_pengeluaran_overhead
+        GROUP BY 
+            DATE_FORMAT(po.tanggal, '%Y-%m')
+    )
+    SELECT
+        periode,
+        SUM(total_biaya) AS total_biaya_overhead
+    FROM
+        total_biaya_overhead
+    GROUP BY
+        periode
+    ORDER BY
+        periode
 ),
 barang_jadi AS (
     SELECT 

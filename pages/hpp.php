@@ -70,8 +70,8 @@ if ($selectedMonth && $selectedYear) {
                                 <th>Tanggal</th>
                                 <th>Total Barang Jadi</th>
                                 <th>Biaya Bahan Baku</th>
+                                <th>Biaya Tenaga Kerja Langsung</th>
                                 <th>Biaya Overhead</th>
-                                <th>Biaya Tenaga Kerja</th>
                                 <th>Total HPP</th>
                             </tr>
                         </thead>
@@ -82,8 +82,8 @@ if ($selectedMonth && $selectedYear) {
                                 foreach ($filteredData as $j) {
                                     $tanggal = $j->periode;
                                     $totalBahanBaku = $j->total_bahan_baku;
-                                    $totalOverhead = $j->total_overhead;
                                     $totalTenagaKerja = $j->total_tenaga_kerja;
+                                    $totalOverhead = $j->total_overhead;
                                     $totalBarangJadi = $j->total_barang_jadi;
                                     $totalHpp = $j->total_hpp;
                             ?>
@@ -92,8 +92,8 @@ if ($selectedMonth && $selectedYear) {
                                         <td><?= $tanggal ?></td>
                                         <td><?= $totalBarangJadi ?></td>
                                         <td class="text-end">Rp. <?= number_format($totalBahanBaku, 2, ',', '.') ?></td>
-                                        <td class="text-end">Rp. <?= number_format($totalOverhead, 2, ',', '.') ?></td>
                                         <td class="text-end">Rp. <?= number_format($totalTenagaKerja, 2, ',', '.') ?></td>
+                                        <td class="text-end">Rp. <?= number_format($totalOverhead, 2, ',', '.') ?></td>
                                         <td class="text-end">Rp. <?= number_format($totalHpp, 2, ',', '.') ?></td>
                                     </tr>
                             <?php
@@ -119,10 +119,14 @@ if ($selectedMonth && $selectedYear) {
 
 <script>
     function printReport() {
-        const printContents = document.getElementById('printArea').innerHTML;
-        const originalContents = document.body.innerHTML;
+        var printContents = document.getElementById("printArea").innerHTML;
+        var originalContents = document.body.innerHTML;
+
         document.body.innerHTML = printContents;
         window.print();
         document.body.innerHTML = originalContents;
+
+        // Pastikan halaman direfresh setelah cetak untuk menghindari masalah rendering
+        window.location.reload();
     }
 </script>

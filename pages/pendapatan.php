@@ -2,7 +2,6 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/webservice/config.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/lib/function.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/pages/add/pendapatan.php";
-require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/pages/update/pendapatan.php";
 
 // Fetch data from database
 $data = Tampil_Data("pendapatan");
@@ -95,17 +94,17 @@ if (empty($data)) {
                                     if (!empty($filteredData)) {
                                         foreach ($filteredData as $j) {
                                             $idpendapatan = $j->id_pendapatan;
-                                            $namakategori = $j->nama_platform;
-                                            $status = $j->tanggal_pendapatan;
-                                            $deskripsi = $j->total_pendapatan;
-                                            $namaakun = $j->status;
+                                            $namaplatform = $j->nama_platform;
+                                            $tanggal = $j->tanggal_pendapatan;
+                                            $totalpendapatan = $j->total_pendapatan;
+                                            $status = $j->status;
                                     ?>
                                             <tr>
                                                 <td><?= $no++ ?></td>
-                                                <td><?= $namakategori ?></td>
+                                                <td><?= $namaplatform ?></td>
+                                                <td><?= $tanggal ?></td>
+                                                <td class="text-end">Rp. <?= number_format($totalpendapatan, 2, ',', '.') ?></td>
                                                 <td><?= $status ?></td>
-                                                <td class="text-end">Rp. <?= number_format($j->total_pendapatan, 2, ',', '.') ?></td>
-                                                <td><?= $namaakun ?></td>
                                                 <td>
                                                     <button type="button" class="btn btn-primary" id="detailModal"
                                                         data-bs-toggle="modal" data-bs-target="#detailModalPendapatan"
@@ -113,8 +112,7 @@ if (empty($data)) {
 
                                                     <button type="button" class="btn btn-primary" id="updateModal"
                                                         data-bs-toggle="modal" data-bs-target="#updateModalPendapatan"
-                                                        data-idpkrja="<?= $idpendapatan ?>" data-nmkategori="<?= $namakategori ?>" data-deskripsi="<?= $deskripsi ?>"
-                                                        data-stts="<?= $status ?>" data-namaakun="<?= $namaakun ?>">Update</button>
+                                                        data-idpkrja="<?= $idpendapatan ?>" data-stts="<?= $status ?>">Update</button>
                                                 </td>
                                             </tr>
                                         <?php
@@ -138,7 +136,41 @@ if (empty($data)) {
     </div>
 </div>
 
+<!-- Modal Status -->
+<div class="modal fade" id="updateModalPendapatan" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateModalLabel">Update Status Akun</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="webservice/update.php" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <form method="POST" action="webservice/update.php" enctype="multipart/form-data">
+                            <input name="id_pendapatan" type="hidden" class="form-control" id="id_pdpn">
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select" name="status" id="idstatus">
+                                    <option disabled>Pilih Status</option>
+                                    <option value="Aktif">Aktif</option>
+                                    <option value="Tidak Aktif">Tidak Aktif</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <button name="update_status_pendapatan" type="submit" class="btn btn-primary">Simpan Data</button>
+                            </div>
+                        </form>
 
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Detail Modal Pendapatan -->
 <div class="modal fade" id="detailModalPendapatan" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -168,35 +200,11 @@ if (empty($data)) {
     $(document).ready(function() {
         $(document).on('click', '#updateModal', function() {
             var varidpendapatan = $(this).data('idpkrja');
-            var varnamakategori = $(this).data('nmkategori');
-            var vardeskripsi = $(this).data('deskripsi');
             var varstatus = $(this).data('stts');
-            var varnamakun = $(this).data('namaakun');
 
-            $('#id_bhn_splr').val(varidpendapatan);
-            $('#nmplat').val(varnamakategori);
-            $('#totalpend').val(vardeskripsi);
-            $('#tglpend').val(varstatus);
-            $('#nmakun').val(varnamakun);
+            $('#id_pdpn').val(varidpendapatan);
+            $('#idstatus').val(varstatus);
 
-        });
-
-        $(document).on('click', '#deleteConfirmation', function() {
-            var kdpesnan = $(this).data('kdpsn');
-            Swal.fire({
-                title: "Apa anda yakin?",
-                text: "Data yang dihapus tidak dapat dikembalikan!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#2ab57d",
-                cancelButtonColor: "#fd625e",
-                confirmButtonText: "Hapus",
-                cancelButtonText: "Batalkan",
-            }).then(function(result) {
-                if (result.isConfirmed) {
-                    location.assign("<?= $baseURL ?>/index.php?link=laundry_pesanan&aksi=delete&id=" + kdpesnan);
-                }
-            });
         });
 
         $(document).on('click', '#detailModal', function() {

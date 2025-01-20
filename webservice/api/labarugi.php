@@ -20,19 +20,20 @@ $hasil = mysqli_query($koneksi, "WITH bahan_baku AS (
 ),
 tenaga_kerja AS (
     SELECT 
-        DATE_FORMAT(po.tanggal, '%Y-%m') AS periode,
-        COALESCE(SUM(tj.subtotal_upah), 0) AS total_upah
+        DATE_FORMAT(tbm.tanggal, '%Y-%m') AS periode, 
+        COALESCE(SUM(dbdm.subtotal_upah), 0) AS total_upah 
     FROM 
-        transaksi_pengeluaran_overhead po
+        transaksi_barang_jadi_masuk tbm
     LEFT JOIN 
-        detail_barang_jadi_masuk tj 
-        ON po.id_pengeluaran_overhead = tj.id_barang_masuk
+        detail_barang_jadi_masuk dbdm 
+        ON tbm.id_barang_masuk = dbdm.id_barang_masuk
+    WHERE 
+        dbdm.subtotal_upah IS NOT NULL              
     GROUP BY 
-        DATE_FORMAT(po.tanggal, '%Y-%m')
+        DATE_FORMAT(tbm.tanggal, '%Y-%m')
 ),
 overhead AS (
     WITH overhead_per_bulan AS (
-        -- Menghasilkan data overhead berdasarkan bulan ekonomis
         SELECT
             po.tanggal AS tanggal_periode,
             DATE_ADD(po.tanggal, INTERVAL oh.bulan_ekonomis MONTH) AS akhir_periode_penyusutan,
@@ -43,7 +44,6 @@ overhead AS (
             detail_pengeluaran oh ON po.id_pengeluaran = oh.id_pengeluaran
     ),
     periode_biaya AS (
-        -- Membuat data per bulan dari awal hingga akhir periode penyusutan
         SELECT
             DATE_FORMAT(DATE_ADD(opb.tanggal_periode, INTERVAL n.num MONTH), '%Y-%m') AS periode,
             opb.nilai_penyusutan
@@ -65,7 +65,6 @@ overhead AS (
         ) n ON DATE_ADD(opb.tanggal_periode, INTERVAL n.num MONTH) <= opb.akhir_periode_penyusutan
     ),
     total_biaya_overhead AS (
-        -- Menyusun total overhead termasuk overhead lain
         SELECT
             p.periode,
             SUM(p.nilai_penyusutan) AS total_biaya
@@ -84,7 +83,6 @@ overhead AS (
         GROUP BY 
             DATE_FORMAT(po.tanggal, '%Y-%m')
     )
-    -- Menggabungkan dan menghitung total biaya overhead per bulan
     SELECT
         periode,
         SUM(total_biaya) AS total_biaya_overhead
@@ -98,9 +96,11 @@ overhead AS (
 pendapatan AS (
     SELECT 
         DATE_FORMAT(tp.tanggal_pendapatan, '%Y-%m') AS periode,
-        COALESCE(SUM(total_pendapatan), 0) AS total_pendapatan
+        COALESCE(SUM(tp.total_pendapatan), 0) AS total_pendapatan
     FROM 
         transaksi_pendapatan tp
+    WHERE 
+        tp.status = 'Aktif'
     GROUP BY 
         DATE_FORMAT(tp.tanggal_pendapatan, '%Y-%m')
 ),
@@ -123,7 +123,7 @@ hpp AS (
 
     SELECT 
         periode,
-        'Biaya Tenaga Kerja' AS keterangan,
+        'Biaya Tenaga Kerja Langsung' AS keterangan,
         total_upah AS total
     FROM tenaga_kerja
 
@@ -156,10 +156,10 @@ SELECT
     periode,
     keterangan,
     total
-FROM hpp
+FROM hpp 
 ORDER BY 
     periode,
-    FIELD(keterangan, 'Total Pendapatan', 'Biaya Bahan Baku', 'Biaya Tenaga Kerja', 'Biaya Overhead', 'Total HPP');
+    FIELD(keterangan, 'Total Pendapatan', 'Biaya Bahan Baku', 'Biaya Tenaga Kerja Langsung', 'Biaya Overhead', 'Total HPP');
 
 
 ");

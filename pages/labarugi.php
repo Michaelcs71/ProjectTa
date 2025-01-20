@@ -136,10 +136,14 @@ $statusLabaRugi = $totalLabaRugi >= 0 ? "Laba" : "Rugi";
 
 <script>
     function printReport() {
-        const printContents = document.getElementById('printArea').innerHTML;
-        const originalContents = document.body.innerHTML;
+        var printContents = document.getElementById("printArea").innerHTML;
+        var originalContents = document.body.innerHTML;
+
         document.body.innerHTML = printContents;
         window.print();
         document.body.innerHTML = originalContents;
+
+        // Pastikan halaman direfresh setelah cetak untuk menghindari masalah rendering
+        window.location.reload();
     }
 </script>

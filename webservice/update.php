@@ -196,25 +196,25 @@ if (isset($_POST['update_peralatan'])) {
 
 
 
-if (isset($_POST['update_pendapatan'])) {
+if (isset($_POST['update_status_pendapatan'])) {
+    // Ambil data dari form
+    $id_pendapatan = mysqli_real_escape_string($koneksi, $_POST['id_pendapatan']);
+    $status = mysqli_real_escape_string($koneksi, $_POST['status']);
 
-    // // Dapatkan waktu saat ini jika diperlukan untuk `date_created`
-    // $time = date('Y-m-d H:i:s');
+    // Data untuk diperbarui
+    $data = [
+        'status' => $status
+    ];
 
-    // Validasi dan filter input
-    $data = array(
-        mysqli_real_escape_string($koneksi, $_POST['id_pendapatan']),
-        mysqli_real_escape_string($koneksi, $_POST['nama_platform']),
-        mysqli_real_escape_string($koneksi, $_POST['total_pendapatan']),
-        mysqli_real_escape_string($koneksi, $_POST['tanggal_pendapatan']),
-        isset($_POST['date_created']) ? mysqli_real_escape_string($koneksi, $_POST['date_created']) : $time,
-        isset($_POST['id_akun']) ? mysqli_real_escape_string($koneksi, $_POST['id_akun']) : null
-    );
+    // Kondisi untuk update
+    $conditions = [
+        'id_pendapatan' => $id_pendapatan
+    ];
 
-    // Panggil fungsi Update_Data untuk memperbarui data
-    Update_Data("transaksi_pendapatan", $data);
+    // Panggil fungsi general untuk update data
+    Update_Data_Status("transaksi_pendapatan", $data, $conditions);
 
-    // Redirect ke halaman lain setelah sukses
+    // Redirect setelah update berhasil
     header("Location: " . $baseURL . "/index.php?link=pendapatan");
     exit();
 }

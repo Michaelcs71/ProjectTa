@@ -14,7 +14,7 @@
                         <select class="form-select" name="nama_pekerja" required>
                             <option selected disabled>Pilih Nama</option>
                             <?php
-                            $queryGetNama = "SELECT * FROM master_pekerja";
+                            $queryGetNama = "SELECT * FROM master_pekerja WHERE status = 'Aktif'";
                             $getNama = mysqli_query($koneksi, $queryGetNama);
                             while ($nama = mysqli_fetch_assoc($getNama)) {
                             ?>
@@ -27,7 +27,7 @@
                         <select data-trigger class="form-select" name="nama_barang" id="namabarang" required>
                             <option selected disabled>Masukkan Nama</option>
                             <?php
-                            $queryGetNama = "SELECT * FROM master_barang_jadi";
+                            $queryGetNama = "SELECT * FROM master_barang_jadi WHERE status = 'Aktif'";
                             $getNama = mysqli_query($koneksi, $queryGetNama);
                             while ($nama = mysqli_fetch_assoc($getNama)) {
                             ?>
@@ -68,7 +68,7 @@
                                 <select class="form-control jumlah-barang" name="nama_bahan_material[]" required>
                                     <option selected disabled>Pilih Material</option>
                                     <?php
-                                    $queryGetNama = "SELECT * FROM master_bahan_material";
+                                    $queryGetNama = "SELECT * FROM master_bahan_material WHERE status = 'Aktif'";
                                     $getNama = mysqli_query($koneksi, $queryGetNama);
                                     while ($nama = mysqli_fetch_assoc($getNama)) {
                                     ?>
@@ -132,7 +132,7 @@
             <select class="form-control" name="nama_bahan_material[]" required>
                 <option selected disabled>Pilih Material</option>
                 <?php
-                $queryGetNama = "SELECT * FROM master_bahan_material";
+                $queryGetNama = "SELECT * FROM master_bahan_material WHERE status = 'Aktif'";
                 $getNama = mysqli_query($koneksi, $queryGetNama);
                 while ($nama = mysqli_fetch_assoc($getNama)) {
                 ?>

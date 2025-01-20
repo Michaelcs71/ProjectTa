@@ -30,7 +30,7 @@
                                 <select class="form-select" name="nama_overhead[]" required>
                                     <option selected disabled>Pilih Nama</option>
                                     <?php
-                                    $queryGetNama = "SELECT * FROM master_overhead";
+                                    $queryGetNama = "SELECT * FROM master_overhead WHERE status = 'Aktif' "; // Menambahkan kondisi status = 1
                                     $getNama = mysqli_query($koneksi, $queryGetNama);
                                     while ($nama = mysqli_fetch_assoc($getNama)) {
                                     ?>
@@ -38,6 +38,7 @@
                                     <?php } ?>
                                 </select>
                             </div>
+
                             <div class="col-md-3">
                                 <input type="number" class="form-control harga-barang" name="harga_barang[]" placeholder="Harga" required>
                             </div>
@@ -87,7 +88,7 @@
                 <select class="form-select" name="nama_overhead[]" required>
                     <option selected disabled>Pilih Nama</option>
                     <?php
-                    $queryGetNama = "SELECT * FROM master_overhead";
+                    $queryGetNama = "SELECT * FROM master_overhead WHERE status = 'Aktif'";
                     $getNama = mysqli_query($koneksi, $queryGetNama);
                     while ($nama = mysqli_fetch_assoc($getNama)) {
                     ?>

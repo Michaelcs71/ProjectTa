@@ -13,7 +13,7 @@
                         <select class="form-select" name="nama_supplier" required>
                             <option selected disabled>Pilih Nama</option>
                             <?php
-                            $queryGetNama = "SELECT * FROM master_supplier";
+                            $queryGetNama = "SELECT * FROM master_supplier WHERE status = 'Aktif'";
                             $getNama = mysqli_query($koneksi, $queryGetNama);
                             while ($nama = mysqli_fetch_assoc($getNama)) {
                             ?>
@@ -34,7 +34,7 @@
                                 <select class="form-control nama-bahan-material" name="nama_bahan_material[]" required>
                                     <option selected disabled>Pilih Material</option>
                                     <?php
-                                    $queryGetNama = "SELECT * FROM master_bahan_material";
+                                    $queryGetNama = "SELECT * FROM master_bahan_material WHERE status = 'Aktif'";
                                     $getNama = mysqli_query($koneksi, $queryGetNama);
                                     while ($nama = mysqli_fetch_assoc($getNama)) {
                                     ?>
@@ -137,7 +137,7 @@
                     <select class="form-control nama-bahan-material" name="nama_bahan_material[]" required>
                         <option selected disabled>Pilih Material</option>
                         <?php
-                        $queryGetNama = "SELECT * FROM master_bahan_material";
+                        $queryGetNama = "SELECT * FROM master_bahan_material WHERE status = 'Aktif'";
                         $getNama = mysqli_query($koneksi, $queryGetNama);
                         while ($nama = mysqli_fetch_assoc($getNama)) {
                         ?>

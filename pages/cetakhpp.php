@@ -27,7 +27,8 @@ $totalBahanBaku = array_reduce($filteredData, function ($carry, $item) {
 
 // Hitung total biaya hanya dari overhead
 $totalOverhead = array_reduce($filteredData, function ($carry, $item) {
-    if (isset($item->total_biaya) && is_numeric($item->total_biaya) && $item->total_biaya > 0 && isset($item->id_overhead) && $item->id_overhead !== null) {
+    // Periksa jika total_biaya dan nama_overhead ada, serta total_biaya lebih dari 0
+    if (isset($item->total_biaya) && is_numeric($item->total_biaya) && $item->total_biaya > 0 && isset($item->nama_overhead)) {
         $carry += $item->total_biaya;
     }
     return $carry;
@@ -56,15 +57,53 @@ $totalUpah = array_reduce($filteredData, function ($carry, $item) {
                     Periode: <?= htmlspecialchars(($selectedYear ?? '') . '-' . ($selectedMonth ?? ''), ENT_QUOTES, 'UTF-8') ?>
                 </h6>
                 <div id="printArea" style="border: 1px solid #ccc; padding: 20px; background-color: #f9f9f9;">
+
                     <style>
                         .text-currency {
                             display: inline-flex;
                             align-items: baseline;
+                            /* Ensures "Rp." and the number are horizontally aligned */
                         }
 
                         .text-currency span {
-                            margin-right: 4px;
+                            margin-right: 12px;
+                            /* Increase the gap between "Rp." and the amount */
                             font-weight: bold;
+                            vertical-align: middle;
+                            /* Ensures vertical alignment */
+                        }
+
+                        .text-end {
+                            text-align: right;
+                        }
+
+                        .text-center {
+                            text-align: center;
+                        }
+
+                        .table-container {
+                            width: 100%;
+                            border-collapse: collapse;
+                            font-size: 14px;
+                        }
+
+                        .table-container td {
+                            padding: 12px;
+                            /* Increased padding for better spacing */
+                        }
+
+                        .table-container td:first-child {
+                            text-align: left;
+                        }
+
+                        .table-container td:last-child {
+                            text-align: center;
+                            /* Center the values for Biaya Bahan Baku, Tenaga Kerja, and Overhead */
+                        }
+
+                        /* Adjust specific rows to have different alignment (centered for expenses) */
+                        .center-align {
+                            text-align: center;
                         }
                     </style>
                     <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
@@ -88,44 +127,11 @@ $totalUpah = array_reduce($filteredData, function ($carry, $item) {
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                                 <tr>
-                                    <td colspan="2" style="font-weight: bold;">Total Biaya Bahan Baku</td>
-                                    <td class="text-end" style="font-weight: bold;">
+                                    <td colspan="2">Total Biaya Bahan Baku</td>
+                                    <td class="text-end">
                                         <div class="text-currency">
                                             <span>Rp.</span>
                                             <?= number_format($totalBahanBaku, 2, ',', '.') ?>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="3" class="text-center">Tidak ada data untuk bulan dan tahun yang dipilih.</td>
-                                </tr>
-                            <?php endif; ?>
-
-                            <!-- Kategori Overhead -->
-                            <tr>
-                                <td colspan="3" style="font-weight: bold;">Biaya Overhead Pabrik</td>
-                            </tr>
-                            <?php if (!empty($filteredData)): ?>
-                                <?php foreach ($filteredData as $item): ?>
-                                    <?php if (isset($item->total_biaya) && $item->total_biaya > 0 && isset($item->id_overhead)): ?>
-                                        <tr>
-                                            <td><?= htmlspecialchars($item->nama_overhead ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                                            <td class="text-end">
-                                                <div class="text-currency">
-                                                    <span>Rp.</span>
-                                                    <?= number_format($item->total_biaya ?? 0, 2, ',', '.') ?>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php endif; ?>
-                                <?php endforeach; ?>
-                                <tr>
-                                    <td colspan="2" style="font-weight: bold;">Total Biaya Overhead Pabrik</td>
-                                    <td class="text-end" style="font-weight: bold;">
-                                        <div class="text-currency">
-                                            <span>Rp.</span>
-                                            <?= number_format($totalOverhead, 2, ',', '.') ?>
                                         </div>
                                     </td>
                                 </tr>
@@ -168,6 +174,42 @@ $totalUpah = array_reduce($filteredData, function ($carry, $item) {
                                 </tr>
                             <?php endif; ?>
 
+
+                            <!-- Kategori Overhead -->
+                            <!-- Kategori Overhead -->
+                            <tr>
+                                <td colspan="3" style="font-weight: bold;">Biaya Overhead Pabrik</td>
+                            </tr>
+                            <?php if (!empty($filteredData)): ?>
+                                <?php foreach ($filteredData as $item): ?>
+                                    <?php if (isset($item->total_biaya) && $item->total_biaya > 0 && isset($item->nama_overhead)): ?>
+                                        <tr>
+                                            <td><?= htmlspecialchars($item->nama_overhead ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                                            <td class="text-end">
+                                                <div class="text-currency">
+                                                    <span>Rp.</span>
+                                                    <?= number_format($item->total_biaya ?? 0, 2, ',', '.') ?>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                                <tr>
+                                    <td colspan="2" style="font-weight: bold;">Total Biaya Overhead Pabrik</td>
+                                    <td class="text-end" style="font-weight: bold;">
+                                        <div class="text-currency">
+                                            <span>Rp.</span>
+                                            <?= number_format($totalOverhead, 2, ',', '.') ?>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="3" class="text-center">Tidak ada data untuk bulan dan tahun yang dipilih.</td>
+                                </tr>
+                            <?php endif; ?>
+
+
                             <!-- Harga Pokok Produksi -->
                             <tr>
                                 <td colspan="2"><strong>Harga Pokok Produksi</strong></td>
@@ -181,9 +223,9 @@ $totalUpah = array_reduce($filteredData, function ($carry, $item) {
                         </tbody>
                     </table>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" onclick="printReport()">Cetak</button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="printReport()">Cetak</button>
             </div>
         </div>
     </div>

@@ -125,6 +125,40 @@ function Tampil_Data_Cetak($endpoint)
     return json_decode($json, true);
 }
 
+function Update_Data_Status($table, $data, $conditions)
+{
+    // Pastikan koneksi database sudah tersedia
+    global $koneksi;
+
+    // Pastikan parameter data dan conditions adalah array
+    if (!is_array($data) || !is_array($conditions)) {
+        die("Data dan kondisi harus berupa array.");
+    }
+
+    // Buat bagian SET dari query
+    $setClauses = [];
+    foreach ($data as $column => $value) {
+        $setClauses[] = "$column = '" . mysqli_real_escape_string($koneksi, $value) . "'";
+    }
+    $setQuery = implode(", ", $setClauses);
+
+    // Buat bagian WHERE dari query
+    $whereClauses = [];
+    foreach ($conditions as $column => $value) {
+        $whereClauses[] = "$column = '" . mysqli_real_escape_string($koneksi, $value) . "'";
+    }
+    $whereQuery = implode(" AND ", $whereClauses);
+
+    // Buat query update
+    $query = "UPDATE $table SET $setQuery WHERE $whereQuery";
+
+    // Eksekusi query
+    if (mysqli_query($koneksi, $query)) {
+        return true;
+    } else {
+        die("Error updating record: " . mysqli_error($koneksi));
+    }
+}
 
 
 // function Update_Data($table, $data, $where)

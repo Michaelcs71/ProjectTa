@@ -14,14 +14,13 @@
                         <select class="form-select" name="nama_pekerja" id="nama-pekerja" required>
                             <option selected disabled>Pilih Nama</option>
                             <?php
-                            $queryGetNama = "SELECT * FROM master_pekerja";
+                            $queryGetNama = "SELECT * FROM master_pekerja WHERE status = 'Aktif'";
                             $getNama = mysqli_query($koneksi, $queryGetNama);
                             while ($nama = mysqli_fetch_assoc($getNama)) {
                             ?>
                                 <option value="<?= $nama['id_pekerja'] ?>"><?= $nama['nama_pekerja'] ?></option>
                             <?php } ?>
                         </select>
-
                     </div>
 
                     <div class="row mb-3">
@@ -37,7 +36,6 @@
 
                     <hr>
                     <!-- Tambah Barang -->
-
                     <label class="form-label"><strong>Detail Barang</strong></label>
                     <div id="formBarangJadiMasuk">
                         <div class="row mb-3 barang-item">
@@ -45,7 +43,7 @@
                                 <select class="form-control nama-barang" name="nama_barang[]" required>
                                     <option selected disabled>Pilih Material</option>
                                     <?php
-                                    $queryGetNama = "SELECT * FROM master_barang_jadi";
+                                    $queryGetNama = "SELECT * FROM master_barang_jadi WHERE status = 'Aktif'";
                                     $getNama = mysqli_query($koneksi, $queryGetNama);
                                     while ($nama = mysqli_fetch_assoc($getNama)) {
                                     ?>
@@ -64,8 +62,10 @@
                                 <input type="number" class="form-control jumlah-barang" name="jumlah_barang[]" placeholder="Jumlah" required>
                             </div>
                             <div class="col-md-3">
-                                <input type="number" class="form-control subtotal" name="subtotal[]" placeholder="Subtotal" readonly>
+                                <input type="text" class="form-control subtotal" name="subtotal_display[]" placeholder="Subtotal" readonly>
+                                <input type="hidden" class="subtotal-hidden" name="subtotal[]">
                             </div>
+
                             <div class="col-md-1">
                                 <button type="button" class="btn btn-danger btn-sm hapus-barang">X</button>
                             </div>
@@ -75,7 +75,8 @@
                     <hr>
                     <div class="mb-3">
                         <label for="total_upah" class="form-label"><strong>Total Upah</strong></label>
-                        <input type="number" id="total-pembelian" class="form-control" name="total_upah" readonly>
+                        <input type="text" id="total-pembelian" class="form-control" readonly>
+                        <input type="hidden" name="total_upah" id="totalUpahClean">
                     </div>
                     <!-- Tombol Simpan -->
                     <div class="mb-3 d-flex justify-content-end">
@@ -87,38 +88,55 @@
     </div>
 </div>
 
-
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const modalID = "insertModalStokBarang";
         const formBarangJadiMasuk = document.querySelector(`#${modalID} #formBarangJadiMasuk`);
         const totalPembelianInput = document.querySelector(`#${modalID} #total-pembelian`);
+        const totalUpahHiddenInput = document.querySelector(`#${modalID} #totalUpahClean`);
+
+        // Fungsi Format Rupiah
+        function formatRupiah(angka) {
+            return new Intl.NumberFormat("id-ID", {
+                style: "currency",
+                currency: "IDR",
+                minimumFractionDigits: 2,
+            }).format(angka);
+        }
 
         // Fungsi Menghitung Subtotal dan Total
         function calculateSubtotal(row) {
             const selectBarang = row.querySelector(".nama-barang");
             const jumlahInput = row.querySelector(".jumlah-barang");
             const subtotalInput = row.querySelector(".subtotal");
+            const hiddenSubtotalInput = row.querySelector(".subtotal-hidden"); // Input tersembunyi
 
-            const harga = parseFloat(selectBarang.options[selectBarang.selectedIndex].getAttribute("data-harga")) || 0;
-            const upah = parseFloat(selectBarang.options[selectBarang.selectedIndex].getAttribute("data-upah")) || 0;
+            // Ambil data harga dan upah dari atribut HTML
+            const harga = parseFloat(selectBarang.options[selectBarang.selectedIndex]?.getAttribute("data-harga")) || 0;
+            const upah = parseFloat(selectBarang.options[selectBarang.selectedIndex]?.getAttribute("data-upah")) || 0;
             const jumlah = parseFloat(jumlahInput.value) || 0;
 
-            const subtotal = jumlah * harga * (upah / 100);
-            subtotalInput.value = subtotal.toFixed(2);
+            // Hitung subtotal
+            const subtotal = parseFloat((jumlah * harga * (upah / 100)).toFixed(2));
+
+            hiddenSubtotalInput.value = subtotal; // Simpan nilai asli ke input hidden
+            subtotalInput.value = formatRupiah(subtotal);
 
             calculateTotal();
         }
 
         function calculateTotal() {
             let total = 0;
-            formBarangJadiMasuk.querySelectorAll(".subtotal").forEach(function(input) {
-                total += parseFloat(input.value) || 0;
+            formBarangJadiMasuk.querySelectorAll(".subtotal-hidden").forEach(function(input) {
+                total += parseFloat(input.value) || 0; // Gunakan nilai dari input hidden
             });
-            totalPembelianInput.value = total.toFixed(2);
+
+            totalPembelianInput.dataset.value = total.toFixed(2);
+            totalPembelianInput.value = formatRupiah(total);
+            totalUpahHiddenInput.value = total; // Simpan nilai asli ke input hidden
         }
 
-        // Tambahkan Event Listener
+        // Tambahkan Event Listener untuk menampilkan target
         function attachHandlers(row) {
             const selectBarang = row.querySelector(".nama-barang");
             const jumlahInput = row.querySelector(".jumlah-barang");
@@ -133,7 +151,6 @@
                     fetch(`webservice/api/targetbarang.php?id_pekerja=${pekerjaId}&id_barang=${barangId}`)
                         .then(response => response.json())
                         .then(data => {
-                            console.log("Data fetched:", data); // Debug respons API
                             targetInput.value = data.target_jumlah || 0;
                         })
                         .catch(() => {
@@ -141,7 +158,6 @@
                         });
                 }
 
-                // Hitung Ulang Subtotal
                 calculateSubtotal(row);
             });
 
@@ -156,10 +172,8 @@
             });
         }
 
-        // Pasang Event Handler ke Baris Awal
         formBarangJadiMasuk.querySelectorAll(".barang-item").forEach(attachHandlers);
 
-        // Tambah Baris Barang
         document.querySelector(`#${modalID} #tambahBarangJadiMasuk`).addEventListener("click", function() {
             const newBarangJadi = document.createElement("div");
             newBarangJadi.classList.add("row", "mb-3", "barang-item");
@@ -168,7 +182,7 @@
                 <select class="form-control nama-barang" name="nama_barang[]" required>
                     <option selected disabled>Pilih Material</option>
                     <?php
-                    $queryGetNama = "SELECT * FROM master_barang_jadi";
+                    $queryGetNama = "SELECT * FROM master_barang_jadi WHERE status = 'Aktif'";
                     $getNama = mysqli_query($koneksi, $queryGetNama);
                     while ($nama = mysqli_fetch_assoc($getNama)) {
                     ?>
@@ -187,7 +201,8 @@
                 <input type="number" class="form-control jumlah-barang" name="jumlah_barang[]" placeholder="Jumlah" required>
             </div>
             <div class="col-md-3">
-                <input type="number" class="form-control subtotal" name="subtotal[]" placeholder="Subtotal" readonly>
+                <input type="text" class="form-control subtotal" name="subtotal_display[]" placeholder="Subtotal" readonly>
+                <input type="hidden" class="subtotal-hidden" name="subtotal[]" />
             </div>
             <div class="col-md-1">
                 <button type="button" class="btn btn-danger btn-sm hapus-barang">X</button>
@@ -197,14 +212,15 @@
             attachHandlers(newBarangJadi);
         });
 
-        // Reset Semua Data Saat Pekerja Diubah
         document.querySelector(`#${modalID} #nama-pekerja`).addEventListener("change", function() {
             formBarangJadiMasuk.querySelectorAll(".barang-item").forEach(row => {
                 row.querySelector(".target-jumlah").value = 0;
                 row.querySelector(".subtotal").value = "";
                 row.querySelector(".jumlah-barang").value = "";
+                row.querySelector(".subtotal-hidden").value = 0;
             });
-            totalPembelianInput.value = 0;
+            totalPembelianInput.value = formatRupiah(0);
+            totalUpahHiddenInput.value = 0;
         });
     });
 </script>
