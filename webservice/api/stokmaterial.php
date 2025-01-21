@@ -11,21 +11,33 @@ FROM
     master_bahan_material bm
 LEFT JOIN (
     SELECT 
-        id_bahan_material, 
-        SUM(jumlah) AS total_masuk
+        dpbm.id_bahan_material, 
+        SUM(dpbm.jumlah) AS total_masuk
     FROM 
-        detail_pembelian_bahan_material
+        detail_pembelian_bahan_material dpbm
+    INNER JOIN 
+        transaksi_pembelian_bahan_material tpbm
+    ON 
+        dpbm.id_pembelian_material = tpbm.id_pembelian_material
+    WHERE 
+        tpbm.status = 'Aktif'
     GROUP BY 
-        id_bahan_material
+        dpbm.id_bahan_material
 ) masuk ON bm.id_bahan_material = masuk.id_bahan_material
 LEFT JOIN (
     SELECT 
-        id_bahan_material, 
-        SUM(jumlah) AS total_keluar
+        dpbm.id_bahan_material, 
+        SUM(dpbm.jumlah) AS total_keluar
     FROM 
-        detail_penggunaan_bahan_material
+        detail_penggunaan_bahan_material dpbm
+    INNER JOIN 
+        transaksi_penggunaan_bahan_material tpbm
+    ON 
+        dpbm.id_penggunaan_material = tpbm.id_penggunaan_material
+    WHERE 
+        tpbm.status = 'Aktif'
     GROUP BY 
-        id_bahan_material
+        dpbm.id_bahan_material
 ) keluar ON bm.id_bahan_material = keluar.id_bahan_material
 ORDER BY 
     bm.nama_bahan_material;");

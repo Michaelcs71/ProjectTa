@@ -218,3 +218,117 @@ if (isset($_POST['update_status_pendapatan'])) {
     header("Location: " . $baseURL . "/index.php?link=pendapatan");
     exit();
 }
+
+if (isset($_POST['update_status_peralatan'])) {
+    // Ambil data dari form
+    $id_pengeluaran = mysqli_real_escape_string($koneksi, $_POST['id_pengeluaran']);
+    $status = mysqli_real_escape_string($koneksi, $_POST['status']);
+
+    // Data untuk diperbarui
+    $data = [
+        'status' => $status
+    ];
+
+    // Kondisi untuk update
+    $conditions = [
+        'id_pengeluaran' => $id_pengeluaran
+    ];
+
+    // Panggil fungsi general untuk update data
+    Update_Data_Status("transaksi_pengeluaran", $data, $conditions);
+
+    // Redirect setelah update berhasil
+    header("Location: " . $baseURL . "/index.php?link=pembelian");
+    exit();
+}
+
+if (isset($_POST['update_status_overhead'])) {
+    // Ambil data dari form
+    $idperlengkapan = mysqli_real_escape_string($koneksi, $_POST['id_pengeluaran_overhead']);
+    $status = mysqli_real_escape_string($koneksi, $_POST['status']);
+
+    // Data untuk diperbarui
+    $data = [
+        'status' => $status
+    ];
+
+    // Kondisi untuk update
+    $conditions = [
+        'id_pengeluaran_overhead' => $idperlengkapan
+    ];
+
+    // Panggil fungsi general untuk update data
+    Update_Data_Status("transaksi_pengeluaran_overhead", $data, $conditions);
+
+    // Redirect setelah update berhasil
+    header("Location: " . $baseURL . "/index.php?link=bop");
+    exit();
+}
+
+if (isset($_POST['update_status_material_masuk'])) {
+    // Ambil data dari form
+    $id_pembelian_material = mysqli_real_escape_string($koneksi, $_POST['id_pembelian_material']);
+    $status = mysqli_real_escape_string($koneksi, $_POST['status']);
+
+    // Data untuk diperbarui
+    $data = [
+        'status' => $status
+    ];
+
+    // Kondisi untuk update
+    $conditions = [
+        'id_pembelian_material' => $id_pembelian_material
+    ];
+
+    // Panggil fungsi general untuk update data
+    Update_Data_Status("transaksi_pembelian_bahan_material", $data, $conditions);
+
+    // Redirect setelah update berhasil
+    header("Location: " . $baseURL . "/index.php?link=stokmaterial");
+    exit();
+}
+
+if (isset($_POST['update_status_material_keluar'])) {
+    // Ambil data dari form
+    $id_penggunaan_material = mysqli_real_escape_string($koneksi, $_POST['id_penggunaan_material']);
+    $status = mysqli_real_escape_string($koneksi, $_POST['status']);
+
+    // Data untuk diperbarui
+    $data = [
+        'status' => $status
+    ];
+
+    // Kondisi untuk update
+    $conditions = [
+        'id_penggunaan_material' => $id_penggunaan_material
+    ];
+
+    // Panggil fungsi general untuk update data
+    Update_Data_Status("transaksi_penggunaan_bahan_material", $data, $conditions);
+
+    // Redirect setelah update berhasil
+    header("Location: " . $baseURL . "/index.php?link=stokmaterial");
+    exit();
+}
+if (isset($_POST['update_status_barang_masuk'])) {
+    // Ambil data dari form
+    $id_barang_masuk = mysqli_real_escape_string($koneksi, $_POST['id_barang_masuk']);
+    $status = mysqli_real_escape_string($koneksi, $_POST['status']);
+
+    // Data untuk diperbarui
+    $data = [
+        'status' => $status
+    ];
+
+    // Kondisi untuk update
+    $conditions = [
+        'id_barang_masuk' => $id_barang_masuk
+    ];
+
+    // Panggil fungsi general untuk update data
+    Update_Data_Status("transaksi_barang_jadi_masuk", $data, $conditions);
+
+    // Redirect setelah update berhasil
+    header("Location: " . $baseURL . "/index.php?link=stokbarang");
+    exit();
+}

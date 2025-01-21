@@ -1,187 +1,191 @@
-<div class="modal fade" id="insertModalStokBarang" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+pa salah dari kode ketika format klik print bagian nama pt dan periode tidak center seperti sebelum klik print
+<?php
+// Ambil bulan dan tahun dari form
+$selectedMonth = isset($_POST['month']) ? $_POST['month'] : '';
+$selectedYear = isset($_POST['year']) ? $_POST['year'] : '';
+
+// Ambil data dari fungsi
+$data = Tampil_Data("cetakhpp");
+
+// Filter data berdasarkan bulan dan tahun
+$filteredData = [];
+if ($selectedMonth && $selectedYear) {
+    $filteredData = array_filter($data, function ($item) use ($selectedMonth, $selectedYear) {
+        $periode = DateTime::createFromFormat('Y-m', $item->periode);
+        return $periode && $periode->format('m') === $selectedMonth && $periode->format('Y') === $selectedYear;
+    });
+} else {
+    $filteredData = $data;
+}
+
+// Hitung total biaya hanya dari bahan baku
+$totalBahanBaku = array_reduce($filteredData, function ($carry, $item) {
+    if (isset($item->total_biaya) && is_numeric($item->total_biaya) && $item->total_biaya > 0 && isset($item->id_bahan_material) && $item->id_bahan_material !== null) {
+        $carry += $item->total_biaya;
+    }
+    return $carry;
+}, 0);
+
+// Hitung total biaya hanya dari overhead
+$totalOverhead = array_reduce($filteredData, function ($carry, $item) {
+    if (isset($item->total_biaya) && is_numeric($item->total_biaya) && $item->total_biaya > 0 && isset($item->id_overhead) && $item->id_overhead !== null) {
+        $carry += $item->total_biaya;
+    }
+    return $carry;
+}, 0);
+
+// Hitung total upah tenaga kerja
+$totalUpah = array_reduce($filteredData, function ($carry, $item) {
+    if (isset($item->total_upah) && is_numeric($item->total_upah) && $item->total_upah > 0 && isset($item->id_pekerja) && $item->id_pekerja !== null) {
+        $carry += $item->total_upah;
+    }
+    return $carry;
+}, 0);
+?>
+
+<div class="modal fade" id="cetakModal" tabindex="-1" aria-labelledby="cetakModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Form Data Tambah Stok Barang Jadi</h5>
+                <h5 class="modal-title">Laporan Harga Pokok Produksi Tes</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <form method="POST" action="webservice/insert.php" enctype="multipart/form-data">
-                    <!-- Informasi Umum -->
-                    <div class="mb-3">
-                        <label for="nama_pekerja" class="form-label">Nama Pekerja</label>
-                        <select class="form-select" id="nama-pekerja" name="nama_pekerja" required>
-                            <option selected disabled>Pilih Nama</option>
-                            <?php
-                            $queryGetNama = "SELECT * FROM master_pekerja";
-                            $getNama = mysqli_query($koneksi, $queryGetNama);
-                            while ($nama = mysqli_fetch_assoc($getNama)) {
-                                echo "<option value=\"{$nama['id_pekerja']}\">{$nama['nama_pekerja']}</option>";
-                            }
-                            ?>
-                        </select>
-                    </div>
-                    <div id="formBarangJadiMasuk">
-                        <div class="row mb-3 barang-item">
-                            <div class="col-md-4">
-                                <select class="form-control nama-barang" name="nama_barang[]" required>
-                                    <option selected disabled>Pilih Material</option>
-                                    <?php
-                                    $queryGetBarang = "SELECT * FROM master_barang_jadi";
-                                    $getBarang = mysqli_query($koneksi, $queryGetBarang);
-                                    while ($barang = mysqli_fetch_assoc($getBarang)) {
-                                        echo "<option value=\"{$barang['id_barang_jadi']}\" data-harga=\"{$barang['harga']}\" data-upah=\"{$barang['upah']}\">{$barang['nama_barang']}</option>";
-                                    }
-                                    ?>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <input type="number" class="form-control target-jumlah" name="target_jumlah[]" placeholder="Target" readonly>
-                            </div>
-                            <div class="col-md-3">
-                                <input type="number" class="form-control jumlah-barang" name="jumlah_barang[]" placeholder="Jumlah" required>
-                            </div>
-                            <div class="col-md-2">
-                                <input type="number" class="form-control subtotal" name="subtotal[]" placeholder="Subtotal" readonly>
-                            </div>
-                            <div class="col-md-1">
-                                <button type="button" class="btn btn-danger btn-sm hapus-barang">X</button>
-                            </div>
-                        </div>
-                    </div>
-                    <button type="button" id="tambahBarangJadiMasuk" class="btn btn-success btn-sm mb-3">+ Tambah</button>
-                    <div class="mb-3">
-                        <label for="total_upah" class="form-label"><strong>Total Upah</strong></label>
-                        <input type="number" id="total-pembelian" class="form-control" name="total_upah" readonly>
-                    </div>
-                    <div class="mb-3 d-flex justify-content-end">
-                        <button name="insert_stokbarangjadi" type="submit" class="btn btn-primary">Simpan Data</button>
-                    </div>
-                </form>
+            <div class="modal-body" id="printArea">
+                <h4 class="text-center">PT. Sevenshop Tes</h4>
+                <h5 class="text-center">Laporan Harga Pokok Produksi</h5>
+                <h6 class="text-center">
+                    Periode: <?= htmlspecialchars(($selectedYear ?? '') . '-' . ($selectedMonth ?? ''), ENT_QUOTES, 'UTF-8') ?>
+                </h6>
+                <div id="printArea" style="border: 1px solid #ccc; padding: 20px; background-color: #f9f9f9;">
+                    <style>
+                        .text-currency {
+                            display: inline-flex;
+                            align-items: baseline;
+                        }
+
+                        .text-currency span {
+                            margin-right: 4px;
+                            font-weight: bold;
+                        }
+                    </style>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                        <tbody>
+                            <!-- Kategori Bahan Baku -->
+                            <tr>
+                                <td colspan="3" style="font-weight: bold;">Biaya Bahan Baku</td>
+                            </tr>
+                            <?php if (!empty($filteredData)): ?>
+                                <?php foreach ($filteredData as $item): ?>
+                                    <?php if (isset($item->total_jumlah) && isset($item->total_biaya) && $item->total_biaya > 0 && isset($item->id_bahan_material)): ?>
+                                        <tr>
+                                            <td><?= htmlspecialchars($item->nama_bahan_material ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                                            <td class="text-end">
+                                                <div class="text-currency">
+                                                    <span>Rp.</span>
+                                                    <?= number_format($item->total_biaya ?? 0, 2, ',', '.') ?>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                                <tr>
+                                    <td colspan="2">Total Biaya Bahan Baku</td>
+                                    <td class="text-end">
+                                        <div class="text-currency">
+                                            <span>Rp.</span>
+                                            <?= number_format($totalBahanBaku, 2, ',', '.') ?>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="3" class="text-center">Tidak ada data untuk bulan dan tahun yang dipilih.</td>
+                                </tr>
+                            <?php endif; ?>
+
+                            <!-- Kategori Overhead -->
+                            <tr>
+                                <td colspan="3" style="font-weight: bold;">Biaya Overhead Pabrik</td>
+                            </tr>
+                            <?php if (!empty($filteredData)): ?>
+                                <?php foreach ($filteredData as $item): ?>
+                                    <?php if (isset($item->total_biaya) && $item->total_biaya > 0 && isset($item->id_overhead)): ?>
+                                        <tr>
+                                            <td><?= htmlspecialchars($item->nama_overhead ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                                            <td class="text-end">
+                                                <div class="text-currency">
+                                                    <span>Rp.</span>
+                                                    <?= number_format($item->total_biaya ?? 0, 2, ',', '.') ?>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                                <tr>
+                                    <td colspan="2" style="font-weight: bold;">Total Biaya Overhead Pabrik</td>
+                                    <td class="text-end" style="font-weight: bold;">
+                                        <div class="text-currency">
+                                            <span>Rp.</span>
+                                            <?= number_format($totalOverhead, 2, ',', '.') ?>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="3" class="text-center">Tidak ada data untuk bulan dan tahun yang dipilih.</td>
+                                </tr>
+                            <?php endif; ?>
+
+                            <!-- Total Upah -->
+                            <tr>
+                                <td colspan="3" style="font-weight: bold;">Biaya Tenaga Kerja Langsung</td>
+                            </tr>
+                            <?php if (!empty($filteredData)): ?>
+                                <?php foreach ($filteredData as $item): ?>
+                                    <?php if (isset($item->total_upah) && $item->total_upah > 0 && isset($item->id_pekerja)): ?>
+                                        <tr>
+                                            <td><?= htmlspecialchars($item->nama_pekerja ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                                            <td class="text-end">
+                                                <div class="text-currency">
+                                                    <span>Rp.</span>
+                                                    <?= number_format($item->total_upah ?? 0, 2, ',', '.') ?>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                                <tr>
+                                    <td colspan="2" style="font-weight: bold;">Total Upah</td>
+                                    <td class="text-end" style="font-weight: bold;">
+                                        <div class="text-currency">
+                                            <span>Rp.</span>
+                                            <?= number_format($totalUpah, 2, ',', '.') ?>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="3" class="text-center">Tidak ada data untuk bulan dan tahun yang dipilih.</td>
+                                </tr>
+                            <?php endif; ?>
+
+                            <!-- Harga Pokok Produksi -->
+                            <tr>
+                                <td colspan="2"><strong>Harga Pokok Produksi</strong></td>
+                                <td class="text-end" style="font-weight: bold;">
+                                    <div class=" text-currency">
+                                        <span>Rp.</span>
+                                        <?= number_format($totalBahanBaku + $totalOverhead + $totalUpah, 2, ',', '.') ?>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" onclick="printReport()">Cetak</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const modalID = "insertModalStokBarang";
-        const formBarangJadiMasuk = document.querySelector(`#${modalID} #formBarangJadiMasuk`);
-        const totalPembelianInput = document.querySelector(`#${modalID} #total-pembelian`);
-
-        // Tambah Baris Barang
-        document.querySelector(`#${modalID} #tambahBarangJadiMasuk`).addEventListener("click", function() {
-            const newBarangJadi = document.createElement("div");
-            newBarangJadi.classList.add("row", "mb-3", "barang-item");
-            newBarangJadi.innerHTML = `
-                <div class="col-md-4">
-                    <select class="form-control nama-barang" name="nama_barang[]" required>
-                        <option selected disabled>Pilih Material</option>
-                        <?php
-                        $queryGetNama = "SELECT * FROM master_barang_jadi";
-                        $getNama = mysqli_query($koneksi, $queryGetNama);
-                        while ($nama = mysqli_fetch_assoc($getNama)) {
-                        ?>
-                            <option value="<?= $nama['id_barang_jadi'] ?>" 
-                                    data-harga="<?= $nama['harga_terendah'] ?>" 
-                                    data-upah="<?= $nama['persentase_upah'] ?>">
-                                <?= $nama['nama_barang'] ?>
-                            </option>
-                        <?php } ?>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <input type="number" class="form-control target-jumlah" name="target_jumlah[]" placeholder="Target" readonly>
-                </div>
-                <div class="col-md-3">
-                    <input type="number" class="form-control jumlah-barang" name="jumlah_barang[]" placeholder="Jumlah" required>
-                </div>
-                <div class="col-md-2">
-                    <input type="number" class="form-control subtotal" name="subtotal[]" placeholder="Subtotal" readonly>
-                </div>
-                <div class="col-md-1">
-                    <button type="button" class="btn btn-danger btn-sm hapus-barang">X</button>
-                </div>
-            `;
-            formBarangJadiMasuk.appendChild(newBarangJadi);
-            attachHandlers(newBarangJadi);
-        });
-
-        // Fungsi Hitung Subtotal dan Total
-        function calculateSubtotal(row) {
-            const selectBarang = row.querySelector(".nama-barang");
-            const jumlahInput = row.querySelector(".jumlah-barang");
-            const subtotalInput = row.querySelector(".subtotal");
-
-            const harga = parseFloat(selectBarang.options[selectBarang.selectedIndex]?.dataset.harga) || 0;
-            const upah = parseFloat(selectBarang.options[selectBarang.selectedIndex]?.dataset.upah) || 0;
-            const jumlah = parseFloat(jumlahInput.value) || 0;
-
-            const subtotal = jumlah * harga * (upah / 100);
-            subtotalInput.value = subtotal.toFixed(2);
-
-            calculateTotal();
-        }
-
-        function calculateTotal() {
-            let total = 0;
-            formBarangJadiMasuk.querySelectorAll(".subtotal").forEach(function(input) {
-                total += parseFloat(input.value) || 0;
-            });
-            totalPembelianInput.value = total.toFixed(2);
-        }
-
-        // Pasang Event Handler untuk Tiap Baris
-        function attachHandlers(row) {
-            const selectBarang = row.querySelector(".nama-barang");
-            const jumlahInput = row.querySelector(".jumlah-barang");
-            const targetInput = row.querySelector(".target-jumlah");
-
-            // Saat Barang Diganti
-            selectBarang.addEventListener("change", function() {
-                const pekerjaId = document.querySelector(`#${modalID} #nama-pekerja`).value;
-                const barangId = this.value;
-
-                if (pekerjaId && barangId) {
-                    // Fetch Target Jumlah
-                    fetch(`webservice/api/targetbarang.php?id_pekerja=${pekerjaId}&id_barang=${barangId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            targetInput.value = data.target_jumlah || 0;
-                        })
-                        .catch(() => {
-                            targetInput.value = 0;
-                        });
-                }
-
-                // Hitung Ulang Subtotal
-                calculateSubtotal(row);
-            });
-
-            // Saat Jumlah Diubah
-            jumlahInput.addEventListener("input", function() {
-                calculateSubtotal(row);
-            });
-
-            // Hapus Baris
-            const deleteButton = row.querySelector(".hapus-barang");
-            deleteButton.addEventListener("click", function() {
-                row.remove();
-                calculateTotal();
-            });
-        }
-
-        // Pasang Handler untuk Baris Awal
-        formBarangJadiMasuk.querySelectorAll(".barang-item").forEach(attachHandlers);
-
-        // Reset Semua Data Saat Pekerja Diubah
-        document.querySelector(`#${modalID} #nama-pekerja`).addEventListener("change", function() {
-            formBarangJadiMasuk.querySelectorAll(".barang-item").forEach(row => {
-                row.querySelector(".target-jumlah").value = 0;
-                row.querySelector(".subtotal").value = "";
-                row.querySelector(".jumlah-barang").value = "";
-            });
-            totalPembelianInput.value = 0;
-        });
-    });
-</script>

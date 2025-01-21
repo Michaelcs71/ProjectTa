@@ -1,11 +1,13 @@
 <?php
 // Menghitung bulan lalu
-$lastMonth = date('m', strtotime('-3 month'));
-$lastYear = date('Y', strtotime('-3 month'));
+$lastMonth = date('m', strtotime('-1 month'));
+$lastYear = date('Y', strtotime('-1 month'));
 
-// Mendapatkan nilai bulan dan tahun dari parameter GET
-$month = isset($_POST['month']) ? $_POST['month'] : $lastMonth;  // Default bulan lalu
-$year = isset($_POST['year']) ? $_POST['year'] : $lastYear;      // Default tahun bulan lalu
+// Mendapatkan nilai bulan dan tahun dari parameter POST
+$month = isset($_GET['month']) && $_GET['month'] !== '' ? $_GET['month'] : $lastMonth;   // Default bulan lalu
+$year = isset($_GET['year']) && $_GET['year'] !== '' ? $_GET['year'] : $lastYear;        // Default tahun bulan lalu
+// $month = isset($_POST['month']) ? $_POST['month'] : $lastMonth;  // Default bulan lalu
+// $year = isset($_POST['year']) ? $_POST['year'] : $lastYear;      // Default tahun bulan lalu
 ?>
 
 <div class="main-content bg">
@@ -23,7 +25,6 @@ $year = isset($_POST['year']) ? $_POST['year'] : $lastYear;      // Default tahu
                 <p>Selamat Datang di Sistem Keuangan Sevenshop</p>
             </div>
             <div class="row">
-
                 <div class="col-4">
                     <div class="small-box bg-green text-white shadow-primary">
                         <div class="inner">
@@ -35,7 +36,6 @@ $year = isset($_POST['year']) ? $_POST['year'] : $lastYear;      // Default tahu
                         </a>
                     </div>
                 </div>
-
                 <div class="col-4">
                     <div class="small-box bg-red text-white shadow-primary">
                         <div class="inner">
@@ -47,9 +47,6 @@ $year = isset($_POST['year']) ? $_POST['year'] : $lastYear;      // Default tahu
                         </a>
                     </div>
                 </div>
-
-
-
                 <div class="col-4">
                     <div class="small-box bg-yellow text-white shadow-primary">
                         <div class="inner">
@@ -62,13 +59,12 @@ $year = isset($_POST['year']) ? $_POST['year'] : $lastYear;      // Default tahu
                         </a>
                     </div>
                 </div>
-
                 <div class="col-xl-6">
                     <div class="card">
                         <div class="card-header">
                             <h4 class="card-title mb-0">HPP Per Unit</h4>
                         </div>
-                        <form method="POST" action="" style="margin-top: 20px; margin-left: 20px;">
+                        <form id="filterData" method="GET" style="margin-top: 20px; margin-left: 20px;">
                             <div class="row mb-4">
                                 <div class="col-md-4">
                                     <select name="month" class="form-select">
@@ -93,8 +89,7 @@ $year = isset($_POST['year']) ? $_POST['year'] : $lastYear;      // Default tahu
                                 </div>
                                 <div class="col-md-4">
                                     <button class="btn btn-primary" type="submit">Filter</button>
-
-                                    <a href="" class="btn btn-secondary">Reset</a>
+                                    <button class="btn btn-secondary" type="button">Reset</button>
                                 </div>
                             </div>
                         </form>
@@ -103,8 +98,6 @@ $year = isset($_POST['year']) ? $_POST['year'] : $lastYear;      // Default tahu
                         </div>
                     </div><!--end card-->
                 </div>
-
-
                 <div class="col-xl-6">
                     <div class="card">
                         <div class="card-header">
@@ -115,234 +108,109 @@ $year = isset($_POST['year']) ? $_POST['year'] : $lastYear;      // Default tahu
                         </div>
                     </div><!--end card-->
                 </div>
-
-
-
                 <!-- end row -->
             </div> <!-- container-fluid -->
         </div>
     </div>
 </div>
 
-
-
 <script>
-    $(document).ready(function() {
-        // Fungsi untuk mendapatkan periode bulan sebelumnya dalam format 'YYYY-MM'
-        function getPreviousPeriod() {
-            const today = new Date();
-            today.setMonth(today.getMonth() - 1); // Pindahkan ke bulan sebelumnya
-            const year = today.getFullYear();
-            const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Tambahkan 1 karena bulan dalam JavaScript dimulai dari 0
-            return `${year}-${month}`;
-        }
+    const default_month = <?= json_encode($month) ?> 
+    const default_year = <?= json_encode($year) ?>
 
-        // Fungsi untuk mengambil data dari API berdasarkan periode dan keterangan
-        function fetchData(keterangan) {
-            const periode = getPreviousPeriod(); // Dapatkan periode bulan sebelumnya
-            $.ajax({
-                url: "webservice/api/totaldashboard.php",
-                type: "GET",
-                data: {
-                    periode: periode,
-                    keterangan: keterangan // Kirim keterangan ke API
-                },
-                dataType: "json",
-                success: function(response) {
-                    // Memastikan response.data berisi data yang sesuai
-                    const data = response.data || [];
-                    let total = 0;
-                    // Cari total berdasarkan keterangan yang sesuai
-                    data.forEach(item => {
-                        if (item.keterangan === keterangan) {
-                            total = item.total;
-                        }
-                    });
-                    const formattedTotal = formatRupiah(total); // Format angka ke Rupiah
-                    $("#totalPendapatan").text(formattedTotal); // Tampilkan hasil pada elemen #totalHpp
-                },
-                error: function(xhr, status, error) {
-                    console.error(`Error: ${status}, ${error}`);
-                    $("#totalPendapatan").text("Gagal mengambil data: " + error); // Tampilkan pesan error
+    let ctx = document.getElementById('barChart').getContext('2d');
+    let hppChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'HPP Per Unit (Rp)', 
+                    data: [],
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
                 }
-            });
-        }
-
-        // Fungsi untuk memformat angka ke Rupiah
-        function formatRupiah(angka) {
-            return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR'
-            }).format(angka);
-        }
-
-        // Menampilkan total untuk keterangan 'Biaya Overhead'
-        const keterangan = "Total Pendapatan"; // Ganti keterangan di sini sesuai kebutuhan
-        fetchData(keterangan);
-
-        // Set interval untuk memperbarui data setiap 30 detik
-        setInterval(function() {
-            fetchData(keterangan); // Panggil dengan keterangan yang sama secara berkala
-        }, 30000);
-    });
-</script>
-
-<script>
-    $(document).ready(function() {
-        // Fungsi untuk mendapatkan periode bulan sebelumnya dalam format 'YYYY-MM'
-        function getPreviousPeriod() {
-            const today = new Date();
-            today.setMonth(today.getMonth() - 1); // Pindahkan ke bulan sebelumnya
-            const year = today.getFullYear();
-            const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Tambahkan 1 karena bulan dalam JavaScript dimulai dari 0
-            return `${year}-${month}`;
-        }
-
-        // Fungsi untuk mengambil data dari API berdasarkan periode dan keterangan
-        function fetchData(keterangan) {
-            const periode = getPreviousPeriod(); // Dapatkan periode bulan sebelumnya
-            $.ajax({
-                url: "webservice/api/totaldashboard.php",
-                type: "GET",
-                data: {
-                    periode: periode,
-                    keterangan: keterangan // Kirim keterangan ke API
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Produk'
+                    }
                 },
-                dataType: "json",
-                success: function(response) {
-                    // Memastikan response.data berisi data yang sesuai
-                    const data = response.data || [];
-                    let total = 0;
-                    // Cari total berdasarkan keterangan yang sesuai
-                    data.forEach(item => {
-                        if (item.keterangan === keterangan) {
-                            total = item.total;
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'HPP (Rp)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return formatRupiah(value);
                         }
-                    });
-                    const formattedTotal = formatRupiah(total); // Format angka ke Rupiah
-                    $("#totalHpp").text(formattedTotal); // Tampilkan hasil pada elemen #totalHpp
-                },
-                error: function(xhr, status, error) {
-                    console.error(`Error: ${status}, ${error}`);
-                    $("#totalHpp").text("Gagal mengambil data: " + error); // Tampilkan pesan error
+                    }
                 }
-            });
-        }
-
-        // Fungsi untuk memformat angka ke Rupiah
-        function formatRupiah(angka) {
-            return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR'
-            }).format(angka);
-        }
-
-        // Menampilkan total untuk keterangan 'Biaya Overhead'
-        const keterangan = "Total HPP"; // Ganti keterangan di sini sesuai kebutuhan
-        fetchData(keterangan);
-
-        // Set interval untuk memperbarui data setiap 30 detik
-        setInterval(function() {
-            fetchData(keterangan); // Panggil dengan keterangan yang sama secara berkala
-        }, 30000);
-    });
-</script>
-
-<script>
-    $(document).ready(function() {
-        // Fungsi untuk mendapatkan periode bulan sebelumnya dalam format 'YYYY-MM'
-        function getPreviousPeriod() {
-            const today = new Date();
-            today.setMonth(today.getMonth() - 1); // Pindahkan ke bulan sebelumnya
-            const year = today.getFullYear();
-            const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Tambahkan 1 karena bulan dalam JavaScript dimulai dari 0
-            return `${year}-${month}`;
-        }
-
-        // Fungsi untuk mengambil data dari API berdasarkan periode dan keterangan
-        function fetchData(keterangan) {
-            const periode = getPreviousPeriod(); // Dapatkan periode bulan sebelumnya
-            $.ajax({
-                url: "webservice/api/totaldashboard.php",
-                type: "GET",
-                data: {
-                    periode: periode,
-                    keterangan: keterangan // Kirim keterangan ke API
-                },
-                dataType: "json",
-                success: function(response) {
-                    // Memastikan response.data berisi data yang sesuai
-                    const data = response.data || [];
-                    let total = 0;
-                    // Cari total berdasarkan keterangan yang sesuai
-                    data.forEach(item => {
-                        if (item.keterangan === keterangan) {
-                            total = item.total;
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return formatRupiah(tooltipItem.raw);
                         }
-                    });
-                    const formattedTotal = formatRupiah(total); // Format angka ke Rupiah
-                    $("#totalLabaRugi").text(formattedTotal); // Tampilkan hasil pada elemen #totalHpp
-                },
-                error: function(xhr, status, error) {
-                    console.error(`Error: ${status}, ${error}`);
-                    $("#totalLabaRugi").text("Gagal mengambil data: " + error); // Tampilkan pesan error
+                    }
                 }
-            });
+            }
         }
+    }); 
 
-        // Fungsi untuk memformat angka ke Rupiah
-        function formatRupiah(angka) {
-            return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR'
-            }).format(angka);
-        }
+    function updateCharts(month, year){
+        $.ajax({
+            url: "webservice/api/hppproduk.php",
+            type: "GET",
+            cache: false,
+            dataType: "json",
+            data: {
+                month: month,
+                year: year,
+            },
+            success: function(data) {
+                console.log(`data: `, data);
+                
+                // Cek jika data kosong
+                if (!data || data.length === 0) {
+                    // Tampilkan pesan jika tidak ada data
+                    document.getElementById('barChart').style.display = 'none'; // Menyembunyikan grafik
+                    alert('Data untuk bulan dan tahun yang dipilih tidak ditemukan.');
 
-        // Menampilkan total untuk keterangan 'Biaya Overhead'
-        const keterangan = "Laba Rugi"; // Ganti keterangan di sini sesuai kebutuhan
-        fetchData(keterangan);
+                    return
+                }
 
-        // Set interval untuk memperbarui data setiap 30 detik
-        setInterval(function() {
-            fetchData(keterangan); // Panggil dengan keterangan yang sama secara berkala
-        }, 30000);
-    });
-</script>
-
-
-
-<script>
-    const month = <?= json_encode($month) ?>;
-    const year = <?= json_encode($year) ?>;
-    const apiUrl = `http://localhost/ProjectTa/webservice/api/hppproduk.php?month=${month}&year=${year}`;
-
-    // Ambil data dengan URL API yang sudah dilengkapi parameter bulan dan tahun
-    fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-            // Cek jika data kosong
-            if (data.length === 0) {
-                // Tampilkan pesan jika tidak ada data
-                document.getElementById('barChart').style.display = 'none'; // Menyembunyikan grafik
-                alert('Data untuk bulan dan tahun yang dipilih tidak ditemukan.');
-            } else {
                 // Proses data jika ada
                 const labels = data.map(item => item.nama_barang); // Nama barang sebagai label
-                const hppData = data.map(item => item.hpp_per_unit); // HPP per unit
+                const hppData = data.map(item => item.hpp_per_unit); // HPP per 
+                if(hppChart) {
+                    hppChart.destroy();
+                    hppChart = null
+                }
 
-                // Buat grafik Bar
-                const ctx = document.getElementById('barChart').getContext('2d');
-                new Chart(ctx, {
+                ctx = document.getElementById('barChart').getContext('2d');
+                hppChart = new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: labels,
-                        datasets: [{
-                            label: 'HPP Per Unit (Rp)',
-                            data: hppData,
-                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        }]
+                        datasets: [
+                            {
+                                label: 'HPP Per Unit (Rp)', 
+                                data: hppData,
+                                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }
+                        ]
                     },
                     options: {
                         responsive: true,
@@ -361,10 +229,7 @@ $year = isset($_POST['year']) ? $_POST['year'] : $lastYear;      // Default tahu
                                 },
                                 ticks: {
                                     callback: function(value) {
-                                        return new Intl.NumberFormat('id-ID', {
-                                            style: 'currency',
-                                            currency: 'IDR'
-                                        }).format(value);
+                                        return formatRupiah(value);
                                     }
                                 }
                             }
@@ -373,26 +238,111 @@ $year = isset($_POST['year']) ? $_POST['year'] : $lastYear;      // Default tahu
                             tooltip: {
                                 callbacks: {
                                     label: function(tooltipItem) {
-                                        return new Intl.NumberFormat('id-ID', {
-                                            style: 'currency',
-                                            currency: 'IDR'
-                                        }).format(tooltipItem.raw);
+                                        return formatRupiah(tooltipItem.raw);
                                     }
                                 }
                             }
                         }
                     }
                 });
+            },
+            error: function(xhr, status, error) {
+                console.error(`Error fetching data: ${status}, ${error}`);
             }
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
         });
+
+        return
+    }
+
+    function getPreviousPeriod() {
+        const today = new Date();
+        today.setMonth(today.getMonth() - 1); // Pindahkan ke bulan sebelumnya
+        const year = today.getFullYear();
+        const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Tambahkan 1 karena bulan dalam JavaScript dimulai dari 0
+        return `${year}-${month}`;
+    }
+
+    function formatRupiah(angka) {
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR'
+        }).format(angka);
+    }
+    
+    function fetchData(keterangan, id) {
+        const periode = getPreviousPeriod(); // Dapatkan periode bulan sebelumnya
+        $.ajax({
+            url: "webservice/api/totaldashboard.php",
+            type: "GET",
+            data: {
+                periode: periode,
+                keterangan: keterangan // Kirim keterangan ke API
+            },
+            dataType: "json",
+            success: function(response) {
+                // Memastikan response.data berisi data yang sesuai
+                const data = response.data || [];
+                let total = 0;
+                // Cari total berdasarkan keterangan yang sesuai
+                for(const item of data){
+                    if (item.keterangan === keterangan) {
+                        total = item.total;
+                    }
+                }
+                $(id).text(formatRupiah(total)); // Tampilkan hasil pada elemen #totalHpp
+            },
+            error: function(xhr, status, error) {
+                console.error(`Error: ${status}, ${error}`);
+                $(id).text("Gagal mengambil data: " + error); // Tampilkan pesan error
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        function getData(){
+            const penggunaan = [
+            {
+                keterangan: "Total Pendapatan",
+                id: "#totalPendapatan"
+            },
+            {
+                keterangan: "Total HPP",
+                id: "#totalHpp"
+            },
+            {
+                keterangan: "Laba Rugi",
+                id: "#totalLabaRugi"
+            }
+        ]
+
+        for (const { keterangan, id } of penggunaan) {
+            fetchData(keterangan, id); // Panggil dengan keterangan yang sama secara berkala
+        }
+        
+        return
+        } 
+        
+        getData()
+
+        updateCharts(default_month, default_year)
+
+        setInterval(function() {
+            getData()
+        }, 30000)
+    })
+
+    document.getElementById("filterData").addEventListener("submit", function(event){
+        event.preventDefault();
+        const formData = new FormData(event.target);
+
+        updateCharts(formData.get('month'), formData.get('year'));
+
+        return
+    })
 </script>
 
 <script>
     const apiUrll = "http://localhost/ProjectTa/webservice/api/labarugidashboard.php";
-
     // Ambil data dari API
     fetch(apiUrll)
         .then(response => response.json())
@@ -466,17 +416,6 @@ $year = isset($_POST['year']) ? $_POST['year'] : $lastYear;      // Default tahu
             console.error('Error fetching data:', error);
         });
 </script>
-
-
-
-
-
-
-
-
-
-
-
 
 <link rel="stylesheet" href="assets/libs/glightbox/css/glightbox.min.css">
 <script src="assets/libs/glightbox/js/glightbox.min.js"></script>

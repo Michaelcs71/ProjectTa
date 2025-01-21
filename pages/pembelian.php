@@ -87,9 +87,10 @@ if ($selectedMonth && $selectedYear) {
                                                 <td class="text-end">Rp. <?= number_format($j->total_biaya, 2, ',', '.') ?></td>
                                                 <td><?= $status ?></td>
                                                 <td>
-                                                    <button type="button" class="btn btn-primary" id="detailModal" data-bs-toggle="modal" data-bs-target="#detailModalpembelian" data-idpkrja="<?= $idPembelian ?>">Detail</button>
-
-                                                    <button type="button" class="btn btn-primary" id="updateModal" data-bs-toggle="modal" data-bs-target="#updateModalpembelian" data-idpkrja="<?= $idPembelian ?>">Update</button>
+                                                    <button type="button" class="btn btn-primary" id="detailModal" data-bs-toggle="modal" data-bs-target="#updateModalPeralatan" data-idpkrja="<?= $idPembelian ?>">Detail</button>
+                                                    <button type="button" class="btn btn-primary" id="updateModal"
+                                                        data-bs-toggle="modal" data-bs-target="#updateModalPeralatan"
+                                                        data-idpkrja="<?= $idPembelian ?>" data-stts="<?= $status ?>">Update</button>
                                                 </td>
                                             </tr>
                                     <?php
@@ -109,7 +110,38 @@ if ($selectedMonth && $selectedYear) {
     </div>
 </div>
 
+<!-- Modal Status -->
+<div class="modal fade" id="updateModalPeralatan" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateModalLabel">Update Status Peralatan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="webservice/update.php" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <form method="POST" action="webservice/update.php" enctype="multipart/form-data">
+                            <input name="id_pengeluaran" type="hidden" class="form-control" id="id_pdpn">
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select" name="status" id="idstatus">
+                                    <option disabled>Pilih Status</option>
+                                    <option value="Aktif">Aktif</option>
+                                    <option value="Tidak Aktif">Tidak Aktif</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <button name="update_status_peralatan" type="submit" class="btn btn-primary">Simpan Data</button>
+                            </div>
+                        </form>
 
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Detail Modal -->
 <div class="modal fade" id="detailModalpembelian" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -145,36 +177,14 @@ if ($selectedMonth && $selectedYear) {
 <script>
     $(document).ready(function() {
         $(document).on('click', '#updateModal', function() {
-            var varidPembelian = $(this).data('idpkrja');
-            var varnamaPembelian = $(this).data('nmPembelian');
-            var vardeskripsi = $(this).data('deskripsi');
+            var varidpendapatan = $(this).data('idpkrja');
             var varstatus = $(this).data('stts');
-            var varnamakun = $(this).data('namaakun');
 
-            $('#id_bhn_splr').val(varidPembelian);
-            $('#nmplat').val(varnamaPembelian);
-            $('#totalpend').val(vardeskripsi);
-            $('#tglpend').val(varstatus);
-            $('#nmakun').val(varnamakun);
+            $('#id_pdpn').val(varidpendapatan);
+            $('#idstatus').val(varstatus);
+
         });
 
-        $(document).on('click', '#deleteConfirmation', function() {
-            var kdpesnan = $(this).data('kdpsn');
-            Swal.fire({
-                title: "Apa anda yakin?",
-                text: "Data yang dihapus tidak dapat dikembalikan!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#2ab57d",
-                cancelButtonColor: "#fd625e",
-                confirmButtonText: "Hapus",
-                cancelButtonText: "Batalkan",
-            }).then(function(result) {
-                if (result.isConfirmed) {
-                    location.assign("<?= $baseURL ?>/index.php?link=laundry_pesanan&aksi=delete&id=" + kdpesnan);
-                }
-            });
-        });
 
         $(document).on('click', '#detailModal', function() {
             var varidPengeluaran = $(this).data('idpkrja');

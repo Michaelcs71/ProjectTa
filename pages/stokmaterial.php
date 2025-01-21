@@ -3,7 +3,9 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/webservice/config.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/lib/function.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/pages/add/stokmaterialmasuk.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/pages/add/stokmaterialkeluar.php";
-require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/pages/update/stokmaterial.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/pages/update/stokmaterialmasuk.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/pages/update/stokmaterialkeluar.php";
+
 
 
 if (function_exists('Tampil_Data')) {
@@ -36,6 +38,11 @@ if ($data === null) {
                                 data-bs-target="#insertModalMasuk">Stok Masuk</button>
                             <button type="button" class="btn btn-danger mb-sm-2" data-bs-toggle="modal"
                                 data-bs-target="#insertModalKeluar">Stok Keluar</button>
+                            <button type="button" class="btn btn-warning mb-sm-2" data-bs-toggle="modal"
+                                data-bs-target="#updateModalMaterialMasuk">Update Stok Masuk</button>
+                            <button type="button" class="btn btn-secondary mb-sm-2" data-bs-toggle="modal"
+                                data-bs-target="#updateModalMaterialKeluar">Update Stok Keluar</button>
+
                             <table id="datatable-buttons"
                                 class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover text-center">
                                 <thead class="table-light">

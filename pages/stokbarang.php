@@ -33,8 +33,8 @@ if ($data === null) {
                         <div class="card-body">
                             <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal"
                                 data-bs-target="#insertModalStokBarang">Stok Masuk</button>
-                            <!-- <button type="button" class="btn btn-danger mb-sm-2" data-bs-toggle="modal"
-                                data-bs-target="#insertModalKeluar">Stok Keluar</button> -->
+                            <button type="button" class="btn btn-warning mb-sm-2" data-bs-toggle="modal"
+                                data-bs-target="#updateModalBarangMasuk">Update Stok Masuk</button>
                             <table id="datatable-buttons"
                                 class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover text-center">
                                 <thead class="table-light">

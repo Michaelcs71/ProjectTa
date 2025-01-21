@@ -13,22 +13,34 @@ FROM
 LEFT JOIN 
     (
         SELECT 
-            id_barang_jadi, 
-            SUM(jumlah) AS total_masuk 
+            dbjm.id_barang_jadi, 
+            SUM(dbjm.jumlah) AS total_masuk 
         FROM 
-            detail_barang_jadi_masuk 
+            detail_barang_jadi_masuk dbjm
+        JOIN 
+            transaksi_barang_jadi_masuk tbjm 
+        ON 
+            dbjm.id_barang_masuk = tbjm.id_barang_masuk
+        WHERE 
+            tbjm.status = 'Aktif'  
         GROUP BY 
-            id_barang_jadi
+            dbjm.id_barang_jadi
     ) AS stok_masuk ON mbj.id_barang_jadi = stok_masuk.id_barang_jadi
 LEFT JOIN 
     (
         SELECT 
-            id_barang_jadi, 
-            SUM(total_barang) AS total_keluar 
+            dp.id_barang_jadi, 
+            SUM(dp.total_barang) AS total_keluar 
         FROM 
-            detail_pendapatan 
+            detail_pendapatan dp
+        JOIN 
+            transaksi_pendapatan tp 
+        ON 
+            dp.id_pendapatan = tp.id_pendapatan
+        WHERE 
+            tp.status = 'Aktif' 
         GROUP BY 
-            id_barang_jadi
+            dp.id_barang_jadi
     ) AS stok_keluar ON mbj.id_barang_jadi = stok_keluar.id_barang_jadi
 LEFT JOIN 
     (

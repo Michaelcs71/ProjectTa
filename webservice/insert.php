@@ -209,6 +209,7 @@ if (isset($_POST['insert_pembelian'])) {
         'id_supplier' => $_POST['nama_supplier'],
         'tanggal' => $_POST['tanggal_pembelian'][0], // Ambil tanggal pertama
         'total_biaya' => $_POST['total_pembelian'],
+        'status' => mysqli_real_escape_string($koneksi, $_POST['status']),
         'date_created' => date('Y-m-d H:i:s')
     ];
 
@@ -258,6 +259,7 @@ if (isset($_POST['insert_pembelian_perlengkapan'])) {
         'id_supplier' => mysqli_real_escape_string($koneksi, $_POST['nama_supplier']),
         'tanggal' => mysqli_real_escape_string($koneksi, $_POST['tanggal_pembelian']),
         'total' => mysqli_real_escape_string($koneksi, $_POST['total_pembelian']),
+        'status' => mysqli_real_escape_string($koneksi, $_POST['status']),
         'date_created' => $time,
     );
 

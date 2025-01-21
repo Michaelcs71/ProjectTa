@@ -1,4 +1,4 @@
-<div class="modal fade" id="updateModalBarangMasuk" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="updateModalMaterialKeluar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -8,8 +8,8 @@
             <div class="modal-body">
                 <form method="POST" action="webservice/update.php" enctype="multipart/form-data">
                     <div class="mb-3">
-                        <label for="id_barang_masuk" class="form-label">ID Penggunaan Material</label>
-                        <select class="form-select" name="id_barang_masuk" id="id_barang_masuk" onchange="fetchMaterialDataKeluar()">
+                        <label for="id_penggunaan_material" class="form-label">ID Penggunaan Material</label>
+                        <select class="form-select" name="id_penggunaan_material" id="id_penggunaan_material" onchange="fetchMaterialDataKeluar()">
                             <option value="" disabled selected>Pilih ID</option>
                             <!-- ID akan diisi melalui JavaScript -->
                         </select>
@@ -19,14 +19,17 @@
                         <input type="text" id="pekerja" class="form-control" readonly>
                     </div>
                     <div class="mb-3">
-                        <label for="tanggal" class="form-label">Tanggal</label>
-                        <input type="text" id="tanggal" class="form-control" readonly>
+                        <label for="barang" class="form-label">Barang</label>
+                        <input type="text" id="barang" class="form-control" readonly>
                     </div>
                     <div class="mb-3">
-                        <label for="total_upah" class="form-label">Total Upah</label>
-                        <input type="text" id="total_upah" class="form-control" readonly>
+                        <label for="tanggal_ambil" class="form-label">Tanggal Pengambilan</label>
+                        <input type="text" id="tanggal_ambil" class="form-control" readonly>
                     </div>
-
+                    <div class="mb-3">
+                        <label for="tanggal_selesai" class="form-label">Estimasi Tanggal Selesai</label>
+                        <input type="text" id="tanggal_selesai" class="form-control" readonly>
+                    </div>
                     <div class="mb-3">
                         <label for="status" class="form-label">Status</label>
                         <select class="form-select" name="status" id="idstatus">
@@ -36,7 +39,7 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <button name="update_status_barang_masuk" type="submit" class="btn btn-primary">Simpan Data</button>
+                        <button name="update_status_material_keluar" type="submit" class="btn btn-primary">Simpan Data</button>
                     </div>
                 </form>
             </div>
@@ -46,13 +49,13 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        fetch("webservice/api/updatestokbarang.php")
+        fetch("webservice/api/stokmaterialkeluar.php")
             .then((response) => response.json())
             .then((data) => {
-                const select = document.getElementById("id_barang_masuk");
+                const select = document.getElementById("id_penggunaan_material");
                 data.forEach((item) => {
                     const option = document.createElement("option");
-                    option.textContent = item.id_barang_masuk;
+                    option.textContent = item.id_penggunaan_material;
                     select.appendChild(option);
 
                 });
@@ -61,14 +64,14 @@
     });
 
     function fetchMaterialDataKeluar() {
-        const id = document.getElementById("id_barang_masuk").value;
+        const id = document.getElementById("id_penggunaan_material").value;
 
         if (!id) {
             console.error("ID tidak valid");
             return;
         }
 
-        fetch(`webservice/api/updatestokbarang.php?id=${id}`)
+        fetch(`webservice/api/stokmaterialkeluar.php?id=${id}`)
             .then((response) => response.json())
             .then((data) => {
                 if (data.error) {
@@ -78,8 +81,9 @@
 
                 // Isi input lainnya
                 document.getElementById("pekerja").value = data.id_pekerja || "";
-                document.getElementById("tanggal").value = data.tanggal || "";
-                document.getElementById("total_upah").value = data.total_upah || "";
+                document.getElementById("barang").value = data.id_barang_jadi || "";
+                document.getElementById("tanggal_ambil").value = data.tanggal_pengambilan || "";
+                document.getElementById("tanggal_selesai").value = data.estimasi_tanggal_selesai || "";
 
                 // Atur dropdown status
                 const statusDropdown = document.getElementById("idstatus");

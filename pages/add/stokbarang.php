@@ -33,6 +33,13 @@
                             <input type="text" class="form-control" name="keterangan" required>
                         </div>
                     </div>
+                    <div class="mb-3" style="display: none;">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" name="status" id="idstatus">
+                            <option value="Aktif" selected>Aktif</option>
+                            <option value="Tidak Aktif">Tidak Aktif</option>
+                        </select>
+                    </div>
 
                     <hr>
                     <!-- Tambah Barang -->
