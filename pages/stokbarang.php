@@ -162,23 +162,7 @@ if ($data === null) {
             $('#nmakun').val(varnamakun);
         });
 
-        $(document).on('click', '#deleteConfirmation', function() {
-            var kdpesnan = $(this).data('kdpsn');
-            Swal.fire({
-                title: "Apa anda yakin?",
-                text: "Data yang dihapus tidak dapat dikembalikan!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#2ab57d",
-                cancelButtonColor: "#fd625e",
-                confirmButtonText: "Hapus",
-                cancelButtonText: "Batalkan",
-            }).then(function(result) {
-                if (result.isConfirmed) {
-                    location.assign("<?= $baseURL ?>/index.php?link=laundry_pesanan&aksi=delete&id=" + kdpesnan);
-                }
-            });
-        });
+
 
         $(document).on('click', '#detailModal', function() {
             var varidstokbarang = $(this).data('idstokbarang');

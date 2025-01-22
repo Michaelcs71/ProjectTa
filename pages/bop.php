@@ -59,8 +59,10 @@ if ($selectedMonth && $selectedYear) {
                                     </form>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal"
-                                data-bs-target="#insertModal">Tambah Data</button>
+                            <?php if ($_SESSION['level'] === "super admin") { ?>
+                                <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal"
+                                    data-bs-target="#insertModal">Tambah Data</button>
+                            <?php } ?>
                             <table id="datatable"
                                 class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover text-center">
                                 <thead class="table-light">
@@ -92,9 +94,11 @@ if ($selectedMonth && $selectedYear) {
                                                         data-bs-toggle="modal" data-bs-target="#detailModalperlengkapan"
                                                         data-idpkrja="<?= $idperlengkapan ?>">Detail</button>
 
-                                                    <button type="button" class="btn btn-primary" id="updateModal"
-                                                        data-bs-toggle="modal" data-bs-target="#updateModalOverhead"
-                                                        data-idpkrja="<?= $idperlengkapan ?>" data-stts="<?= $status ?>">Update</button>
+                                                    <?php if ($_SESSION['level'] === "super admin") { ?>
+                                                        <button type="button" class="btn btn-primary" id="updateModal"
+                                                            data-bs-toggle="modal" data-bs-target="#updateModalOverhead"
+                                                            data-idpkrja="<?= $idperlengkapan ?>" data-stts="<?= $status ?>">Update</button>
+                                                    <?php } ?>
                                                 </td>
                                             </tr>
                                         <?php

@@ -118,19 +118,19 @@ if (isset($_POST['insert_overhead'])) {
     exit();
 }
 
-// if (isset($_POST['insert_akun'])) {
-//     $data = array(
-//         'id_akun' => mysqli_real_escape_string($koneksi, $_POST['id_akun']),
-//         'nama_akun' => mysqli_real_escape_string($koneksi, $_POST['nama_akun']),
-//         'status' => mysqli_real_escape_string($koneksi, $_POST['status']),
-//         'date_created' => $time,
-//     );
+if (isset($_POST['insert_user'])) {
+    $data = array(
+        'username' => mysqli_real_escape_string($koneksi, $_POST['username']),
+        'pass' => mysqli_real_escape_string($koneksi, $_POST['password']),
+        'level' => mysqli_real_escape_string($koneksi, $_POST['level']),
+        'status' => mysqli_real_escape_string($koneksi, $_POST['status']),
+    );
 
-//     // Call the Insert_Data function to insert data
-//     Insert_Data("master_akun", $data);
-//     header("Location: " . $baseURL . "/index.php?link=akun");
-//     exit();
-// }
+    // Call the Insert_Data function to insert data
+    Insert_Data("user", $data);
+    header("Location: " . $baseURL . "/index.php?link=user");
+    exit();
+}
 
 if (isset($_POST['insert_perlengkapan'])) {
     $data = array(
@@ -209,7 +209,7 @@ if (isset($_POST['insert_pembelian'])) {
         'id_supplier' => $_POST['nama_supplier'],
         'tanggal' => $_POST['tanggal_pembelian'][0], // Ambil tanggal pertama
         'total_biaya' => $_POST['total_pembelian'],
-        'status' => mysqli_real_escape_string($koneksi, $_POST['status']),
+        'status' => $_POST['status'],
         'date_created' => date('Y-m-d H:i:s')
     ];
 
@@ -364,6 +364,7 @@ if (isset($_POST['insert_stokkeluar'])) {
         'tanggal_pengambilan' => mysqli_real_escape_string($koneksi, $_POST['tanggal_pengambilan']),
         'estimasi_tanggal_selesai' => mysqli_real_escape_string($koneksi, $_POST['estimasi_tanggal_jadi']),
         'target_jumlah' => mysqli_real_escape_string($koneksi, $_POST['target_jumlah']),
+        'status' => mysqli_real_escape_string($koneksi, $_POST['status']),
         'date_created' => $time,
     );
 
@@ -397,6 +398,7 @@ if (isset($_POST['insert_stokbarangjadi'])) {
         'tanggal' => mysqli_real_escape_string($koneksi, $_POST['tanggal']),
         'total_upah' => mysqli_real_escape_string($koneksi, $_POST['total_upah']),
         'keterangan' => mysqli_real_escape_string($koneksi, $_POST['keterangan']),
+        'status' => mysqli_real_escape_string($koneksi, $_POST['status']),
         'date_created' => $time,
     );
 

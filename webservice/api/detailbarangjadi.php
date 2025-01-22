@@ -18,8 +18,9 @@ JOIN
     master_pekerja p ON tbjm.id_pekerja = p.id_pekerja
 WHERE 
     mbj.id_barang_jadi = '$id_barang_jadi'
+    AND tbjm.status = 'Aktif'
 ORDER BY 
-    tbjm.tanggal ASC");
+    tbjm.tanggal ASC;");
 
     $jsonRespon = array();
     if (mysqli_num_rows($hasil) > 0) {

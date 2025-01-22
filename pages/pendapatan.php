@@ -1,4 +1,5 @@
 <?php
+
 require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/webservice/config.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/lib/function.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/pages/add/pendapatan.php";
@@ -31,6 +32,8 @@ if (empty($data)) {
 } else {
     echo "Data fetched successfully.";
 }
+
+
 ?>
 
 <div class="main-content">
@@ -73,8 +76,9 @@ if (empty($data)) {
                                     </form>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal"
-                                data-bs-target="#insertModal">Tambah Data</button>
+                            <?php if ($_SESSION['level'] === "super admin") { ?>
+                                <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal" data-bs-target="#insertModal">Tambah Data</button>
+                            <?php } ?>
 
                             <table id="datatable"
                                 class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover text-center">
@@ -110,9 +114,11 @@ if (empty($data)) {
                                                         data-bs-toggle="modal" data-bs-target="#detailModalPendapatan"
                                                         data-idpkrja="<?= $idpendapatan ?>">Detail</button>
 
-                                                    <button type="button" class="btn btn-primary" id="updateModal"
-                                                        data-bs-toggle="modal" data-bs-target="#updateModalPendapatan"
-                                                        data-idpkrja="<?= $idpendapatan ?>" data-stts="<?= $status ?>">Update</button>
+                                                    <?php if ($_SESSION['level'] === "super admin") { ?>
+                                                        <button type="button" class="btn btn-primary" id="updateModal"
+                                                            data-bs-toggle="modal" data-bs-target="#updateModalPendapatan"
+                                                            data-idpkrja="<?= $idpendapatan ?>" data-stts="<?= $status ?>">Update</button>
+                                                    <?php } ?>
                                                 </td>
                                             </tr>
                                         <?php

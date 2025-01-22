@@ -32,9 +32,9 @@ if ($selectedMonth && $selectedYear) {
                             <h4 class="card-title font-size-18">Data Pembelian Peralatan</h4>
                         </div>
                         <div class="card-body">
-
-                            <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal" data-bs-target="#insertModal">Tambah Data</button>
-
+                            <?php if ($_SESSION['level'] === "super admin") { ?>
+                                <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal" data-bs-target="#insertModal">Tambah Data</button>
+                            <?php } ?>
                             <table id="datatable" class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover text-center">
                                 <!-- Filter Form -->
                                 <div class="row mb-4">
@@ -87,10 +87,12 @@ if ($selectedMonth && $selectedYear) {
                                                 <td class="text-end">Rp. <?= number_format($j->total_biaya, 2, ',', '.') ?></td>
                                                 <td><?= $status ?></td>
                                                 <td>
-                                                    <button type="button" class="btn btn-primary" id="detailModal" data-bs-toggle="modal" data-bs-target="#updateModalPeralatan" data-idpkrja="<?= $idPembelian ?>">Detail</button>
-                                                    <button type="button" class="btn btn-primary" id="updateModal"
-                                                        data-bs-toggle="modal" data-bs-target="#updateModalPeralatan"
-                                                        data-idpkrja="<?= $idPembelian ?>" data-stts="<?= $status ?>">Update</button>
+                                                    <button type="button" class="btn btn-primary" id="detailModal" data-bs-toggle="modal" data-bs-target="#detailModalpembelian" data-idpkrja="<?= $idPembelian ?>">Detail tes</button>
+                                                    <?php if ($_SESSION['level'] === "super admin") { ?>
+                                                        <button type="button" class="btn btn-primary" id="updateModal"
+                                                            data-bs-toggle="modal" data-bs-target="#updateModalPeralatan"
+                                                            data-idpkrja="<?= $idPembelian ?>" data-stts="<?= $status ?>">Update</button>
+                                                    <?php } ?>
                                                 </td>
                                             </tr>
                                     <?php

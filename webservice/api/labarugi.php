@@ -15,6 +15,8 @@ $hasil = mysqli_query($koneksi, "WITH bahan_baku AS (
     LEFT JOIN 
         detail_penggunaan_bahan_material dpm 
         ON tpm.id_penggunaan_material = dpm.id_penggunaan_material
+    WHERE 
+        tpm.status = 'Aktif'
     GROUP BY 
         DATE_FORMAT(tpm.tanggal_pengambilan, '%Y-%m')
 ),
@@ -28,6 +30,7 @@ tenaga_kerja AS (
         detail_barang_jadi_masuk dbdm 
         ON tbm.id_barang_masuk = dbdm.id_barang_masuk
     WHERE 
+        tbm.status = 'Aktif' AND
         dbdm.subtotal_upah IS NOT NULL              
     GROUP BY 
         DATE_FORMAT(tbm.tanggal, '%Y-%m')
@@ -42,6 +45,8 @@ overhead AS (
             transaksi_pengeluaran po
         LEFT JOIN 
             detail_pengeluaran oh ON po.id_pengeluaran = oh.id_pengeluaran
+        WHERE 
+            po.status = 'Aktif'
     ),
     periode_biaya AS (
         SELECT
@@ -80,6 +85,8 @@ overhead AS (
             transaksi_pengeluaran_overhead po
         LEFT JOIN 
             detail_pengeluaran_overhead oh ON po.id_pengeluaran_overhead = oh.id_pengeluaran_overhead
+        WHERE 
+            po.status = 'Aktif'
         GROUP BY 
             DATE_FORMAT(po.tanggal, '%Y-%m')
     )

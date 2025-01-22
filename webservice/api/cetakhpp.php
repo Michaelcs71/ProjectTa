@@ -14,6 +14,7 @@ $hasil = mysqli_query($koneksi, "WITH overhead_detail AS (
             detail_pengeluaran dp ON tp.id_pengeluaran = dp.id_pengeluaran
         WHERE 
             dp.nilai_penyusutan IS NOT NULL
+            AND tp.status = 'Aktif'
     ),
     periode_biaya AS (
         SELECT DISTINCT
@@ -76,6 +77,7 @@ $hasil = mysqli_query($koneksi, "WITH overhead_detail AS (
         master_overhead moh ON dpo.id_overhead = moh.id_overhead
     WHERE 
         dpo.biaya_overhead IS NOT NULL
+        AND tpo.status = 'Aktif'
     GROUP BY 
         DATE_FORMAT(tpo.tanggal, '%Y-%m'), 
         moh.nama_overhead
@@ -109,6 +111,7 @@ bahan_baku_detail AS (
         ON dpm.id_bahan_material = mbm.id_bahan_material
     WHERE 
         dpm.jumlah IS NOT NULL
+        AND tpm.status = 'Aktif'
     GROUP BY 
         DATE_FORMAT(tpm.tanggal_pengambilan, '%Y-%m'), 
         dpm.id_bahan_material, 
@@ -136,6 +139,7 @@ upah_tenaga_kerja_detail AS (
         ON tbm.id_pekerja = mp.id_pekerja
     WHERE 
         dbdm.subtotal_upah IS NOT NULL
+        AND tbm.status = 'Aktif'
     GROUP BY 
         DATE_FORMAT(tbm.tanggal, '%Y-%m'), 
         tbm.id_pekerja, 

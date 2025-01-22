@@ -6,7 +6,7 @@ $hasil = mysqli_query($koneksi, "WITH bahan_baku AS (
         DATE_FORMAT(tpm.tanggal_pengambilan, '%Y-%m') AS periode,
         COALESCE(SUM(dpm.jumlah * (
             SELECT 
-                SUM(dpbm.harga_satuan * dpbm.jumlah) / SUM(dpbm.jumlah)
+                SUM(dpbm.harga_satuan * dpbm.jumlah) / NULLIF(SUM(dpbm.jumlah), 0)
             FROM detail_pembelian_bahan_material dpbm
             WHERE dpbm.id_bahan_material = dpm.id_bahan_material
         )), 0) AS total_bahan_material
@@ -15,6 +15,8 @@ $hasil = mysqli_query($koneksi, "WITH bahan_baku AS (
     LEFT JOIN 
         detail_penggunaan_bahan_material dpm 
         ON tpm.id_penggunaan_material = dpm.id_penggunaan_material
+    WHERE 
+        tpm.status = 'Aktif' -- Kondisi tambahan status
     GROUP BY 
         DATE_FORMAT(tpm.tanggal_pengambilan, '%Y-%m')
 ),
@@ -28,7 +30,8 @@ tenaga_kerja AS (
         detail_barang_jadi_masuk dbdm 
         ON tbm.id_barang_masuk = dbdm.id_barang_masuk
     WHERE 
-        dbdm.subtotal_upah IS NOT NULL              
+        dbdm.subtotal_upah IS NOT NULL 
+        AND tbm.status = 'Aktif' -- Kondisi tambahan status       
     GROUP BY 
         DATE_FORMAT(tbm.tanggal, '%Y-%m')
 ),
@@ -42,6 +45,8 @@ overhead AS (
             transaksi_pengeluaran po
         LEFT JOIN 
             detail_pengeluaran oh ON po.id_pengeluaran = oh.id_pengeluaran
+        WHERE 
+            po.status = 'Aktif' -- Kondisi tambahan status
     ),
     periode_biaya AS (
         SELECT
@@ -80,6 +85,8 @@ overhead AS (
             transaksi_pengeluaran_overhead po
         LEFT JOIN 
             detail_pengeluaran_overhead oh ON po.id_pengeluaran_overhead = oh.id_pengeluaran_overhead
+        WHERE 
+            po.status = 'Aktif' -- Kondisi tambahan status
         GROUP BY 
             DATE_FORMAT(po.tanggal, '%Y-%m')
     )
@@ -102,6 +109,8 @@ barang_jadi AS (
     LEFT JOIN 
         detail_barang_jadi_masuk dj 
         ON tbm.id_barang_masuk = dj.id_barang_masuk
+    WHERE 
+        tbm.status = 'Aktif' -- Kondisi tambahan status
     GROUP BY 
         DATE_FORMAT(tbm.tanggal, '%Y-%m')
 )
@@ -128,7 +137,8 @@ WHERE
     total_bahan_material > 0 
     AND total_upah > 0 
     AND total_biaya_overhead > 0
-ORDER BY periode;");
+ORDER BY periode;
+");
 
 $jsonRespon = array();
 if (mysqli_num_rows($hasil) > 0) {

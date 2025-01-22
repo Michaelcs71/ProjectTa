@@ -7,6 +7,7 @@ $hasil = mysqli_query($koneksi, "WITH pendapatan AS (
         COALESCE(SUM(total_pendapatan), 0) AS total_pendapatan
     FROM 
         transaksi_pendapatan
+    WHERE status = 'Aktif'
     GROUP BY 
         DATE_FORMAT(tanggal_pendapatan, '%Y-%m')
 ),
@@ -24,6 +25,7 @@ bahan_baku AS (
     LEFT JOIN 
         detail_penggunaan_bahan_material dpm 
         ON tpm.id_penggunaan_material = dpm.id_penggunaan_material
+    WHERE tpm.status = 'Aktif'
     GROUP BY 
         DATE_FORMAT(tpm.tanggal_pengambilan, '%Y-%m')
 ),
@@ -36,6 +38,7 @@ tenaga_kerja AS (
     LEFT JOIN 
         detail_barang_jadi_masuk tj 
         ON po.id_pengeluaran_overhead = tj.id_barang_masuk
+    WHERE po.status = 'Aktif'
     GROUP BY 
         DATE_FORMAT(po.tanggal, '%Y-%m')
 ),
@@ -48,6 +51,7 @@ overhead AS (
     LEFT JOIN 
         detail_pengeluaran_overhead oh 
         ON po.id_pengeluaran_overhead = oh.id_pengeluaran_overhead
+    WHERE po.status = 'Aktif'
     GROUP BY 
         DATE_FORMAT(po.tanggal, '%Y-%m')
 ),
@@ -60,6 +64,7 @@ barang_jadi AS (
     LEFT JOIN 
         detail_barang_jadi_masuk dj 
         ON tbm.id_barang_masuk = dj.id_barang_masuk
+    WHERE tbm.status = 'Aktif'
     GROUP BY 
         DATE_FORMAT(tbm.tanggal, '%Y-%m')
 ),

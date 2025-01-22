@@ -332,3 +332,26 @@ if (isset($_POST['update_status_barang_masuk'])) {
     header("Location: " . $baseURL . "/index.php?link=stokbarang");
     exit();
 }
+
+if (isset($_POST['update_user'])) {
+    // Ambil data dari form
+    $id_user = mysqli_real_escape_string($koneksi, $_POST['id_user']);
+    $status = mysqli_real_escape_string($koneksi, $_POST['status']);
+
+    // Data untuk diperbarui
+    $data = [
+        'status' => $status
+    ];
+
+    // Kondisi untuk update
+    $conditions = [
+        'id_user' => $id_user
+    ];
+
+    // Panggil fungsi general untuk update data
+    Update_Data_Status("user", $data, $conditions);
+
+    // Redirect setelah update berhasil
+    header("Location: " . $baseURL . "/index.php?link=user");
+    exit();
+}

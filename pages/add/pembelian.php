@@ -26,6 +26,13 @@
                         <label for="tanggal_pembelian" class="form-label">Tanggal Pembelian</label>
                         <input type="date" class="form-control tanggal-pembelian" name="tanggal_pembelian[]" placeholder="Tanggal Pembelian" required>
                     </div>
+                    <div class="mb-3" style="display: none;">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" name="status" id="idstatus">
+                            <option value="Aktif" selected>Aktif</option>
+                            <option value="Tidak Aktif">Tidak Aktif</option>
+                        </select>
+                    </div>
 
                     <!-- Tambah Barang -->
                     <hr>

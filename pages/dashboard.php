@@ -1,4 +1,6 @@
 <?php
+require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/webservice/config.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/lib/function.php";
 // Menghitung bulan lalu
 $lastMonth = date('m', strtotime('-1 month'));
 $lastYear = date('Y', strtotime('-1 month'));
@@ -6,8 +8,25 @@ $lastYear = date('Y', strtotime('-1 month'));
 // Mendapatkan nilai bulan dan tahun dari parameter POST
 $month = isset($_GET['month']) && $_GET['month'] !== '' ? $_GET['month'] : $lastMonth;   // Default bulan lalu
 $year = isset($_GET['year']) && $_GET['year'] !== '' ? $_GET['year'] : $lastYear;        // Default tahun bulan lalu
-// $month = isset($_POST['month']) ? $_POST['month'] : $lastMonth;  // Default bulan lalu
-// $year = isset($_POST['year']) ? $_POST['year'] : $lastYear;      // Default tahun bulan lalu
+
+$selectedMonth = isset($_POST['month']) ? $_POST['month'] : '';
+$selectedYear = isset($_POST['year']) ? $_POST['year'] : '';
+
+// Fetch data using the general function
+$data = Tampil_Data("detailhpp");
+
+// Filter data based on selected month and year if filter is applied
+if ($selectedMonth && $selectedYear) {
+    $filteredData = array_filter($data, function ($item) use ($selectedMonth, $selectedYear) {
+        $date = DateTime::createFromFormat('Y-m', $item->periode); // Ensure correct date format
+        if ($date) {
+            return $date->format('m') === $selectedMonth && $date->format('Y') === $selectedYear;
+        }
+        return false;
+    });
+} else {
+    $filteredData = $data; // Show all data if no filter is applied
+}
 ?>
 
 <div class="main-content bg">
@@ -64,37 +83,37 @@ $year = isset($_GET['year']) && $_GET['year'] !== '' ? $_GET['year'] : $lastYear
                         <div class="card-header">
                             <h4 class="card-title mb-0">HPP Per Unit</h4>
                         </div>
-                        <form id="filterData" method="GET" style="margin-top: 20px; margin-left: 20px;">
-                            <div class="row mb-4">
-                                <div class="col-md-4">
-                                    <select name="month" class="form-select">
-                                        <option value="">Pilih Bulan</option>
-                                        <?php for ($m = 1; $m <= 12; $m++) { ?>
-                                            <option value="<?= str_pad($m, 2, '0', STR_PAD_LEFT) ?>"
-                                                <?= $month == str_pad($m, 2, '0', STR_PAD_LEFT) ? 'selected' : '' ?>>
-                                                <?= date("F", mktime(0, 0, 0, $m, 10)) ?>
-                                            </option>
-                                        <?php } ?>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <select name="year" class="form-select">
-                                        <option value="">Pilih Tahun</option>
-                                        <?php for ($y = date("Y") - 10; $y <= date("Y"); $y++) { ?>
-                                            <option value="<?= $y ?>" <?= $year == $y ? 'selected' : '' ?>>
-                                                <?= $y ?>
-                                            </option>
-                                        <?php } ?>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <button class="btn btn-primary" type="submit">Filter</button>
-                                    <button class="btn btn-secondary" type="button">Reset</button>
-                                </div>
-                            </div>
-                        </form>
                         <div class="card-body">
-                            <canvas id="barChart"></canvas>
+                            <form method="POST">
+                                <div class="row mb-4">
+                                    <div class="col-md-4">
+                                        <select name="month" class="form-select">
+                                            <option value="">Pilih Bulan</option>
+                                            <?php for ($m = 1; $m <= 12; $m++) { ?>
+                                                <option value="<?= str_pad($m, 2, '0', STR_PAD_LEFT) ?>" <?= $selectedMonth == str_pad($m, 2, '0', STR_PAD_LEFT) ? 'selected' : '' ?>>
+                                                    <?= date("F", mktime(0, 0, 0, $m, 10)) ?>
+                                                </option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select name="year" class="form-select">
+                                            <option value="">Pilih Tahun</option>
+                                            <?php for ($y = date("Y") - 5; $y <= date("Y"); $y++) { ?>
+                                                <option value="<?= $y ?>" <?= $selectedYear == $y ? 'selected' : '' ?>><?= $y ?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary" type="submit">Filter</button>
+                                        <a href="" class="btn btn-secondary">Reset</a>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <canvas id="hppChart"></canvas>
+
+
                         </div>
                     </div><!--end card-->
                 </div>
@@ -113,44 +132,45 @@ $year = isset($_GET['year']) && $_GET['year'] !== '' ? $_GET['year'] : $lastYear
         </div>
     </div>
 </div>
-
 <script>
-    const default_month = <?= json_encode($month) ?> 
-    const default_year = <?= json_encode($year) ?>
+    <?php
+    // Prepare data for the chart
+    $labels = [];
+    $hppData = [];
+    foreach ($filteredData as $item) {
+        $labels[] = $item->nama_barang;
+        $hppData[] = (float) $item->hpp_per_unit;
+    }
+    ?>
 
-    let ctx = document.getElementById('barChart').getContext('2d');
-    let hppChart = new Chart(ctx, {
+    var ctx = document.getElementById('hppChart').getContext('2d');
+    var hppChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: [],
-            datasets: [
-                {
-                    label: 'HPP Per Unit (Rp)', 
-                    data: [],
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }
-            ]
+            labels: <?= json_encode($labels) ?>,
+            datasets: [{
+                label: 'Total HPP Per Unit',
+                data: <?= json_encode($hppData) ?>,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
         },
         options: {
             responsive: true,
             scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Produk'
-                    }
-                },
                 y: {
                     beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'HPP (Rp)'
-                    },
                     ticks: {
                         callback: function(value) {
-                            return formatRupiah(value);
+                            // Formatkan angka dengan format 'Rp. 100.000,00' di sumbu Y
+                            var numberFormat = new Intl.NumberFormat('id-ID', {
+                                style: 'currency',
+                                currency: 'IDR',
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
+                            return numberFormat.format(value).replace('Rp', 'Rp.'); // Menambahkan titik setelah 'Rp'
                         }
                     }
                 }
@@ -159,100 +179,25 @@ $year = isset($_GET['year']) && $_GET['year'] !== '' ? $_GET['year'] : $lastYear
                 tooltip: {
                     callbacks: {
                         label: function(tooltipItem) {
-                            return formatRupiah(tooltipItem.raw);
+                            // Formatkan nilai di tooltip dengan format 'Rp. 100.000,00'
+                            var numberFormat = new Intl.NumberFormat('id-ID', {
+                                style: 'currency',
+                                currency: 'IDR',
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
+                            return tooltipItem.dataset.label + ': ' + numberFormat.format(tooltipItem.raw).replace('Rp', 'Rp.');
                         }
                     }
                 }
             }
         }
-    }); 
+    });
+</script>
 
-    function updateCharts(month, year){
-        $.ajax({
-            url: "webservice/api/hppproduk.php",
-            type: "GET",
-            cache: false,
-            dataType: "json",
-            data: {
-                month: month,
-                year: year,
-            },
-            success: function(data) {
-                console.log(`data: `, data);
-                
-                // Cek jika data kosong
-                if (!data || data.length === 0) {
-                    // Tampilkan pesan jika tidak ada data
-                    document.getElementById('barChart').style.display = 'none'; // Menyembunyikan grafik
-                    alert('Data untuk bulan dan tahun yang dipilih tidak ditemukan.');
-
-                    return
-                }
-
-                // Proses data jika ada
-                const labels = data.map(item => item.nama_barang); // Nama barang sebagai label
-                const hppData = data.map(item => item.hpp_per_unit); // HPP per 
-                if(hppChart) {
-                    hppChart.destroy();
-                    hppChart = null
-                }
-
-                ctx = document.getElementById('barChart').getContext('2d');
-                hppChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [
-                            {
-                                label: 'HPP Per Unit (Rp)', 
-                                data: hppData,
-                                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                                borderColor: 'rgba(54, 162, 235, 1)',
-                                borderWidth: 1
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Produk'
-                                }
-                            },
-                            y: {
-                                beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: 'HPP (Rp)'
-                                },
-                                ticks: {
-                                    callback: function(value) {
-                                        return formatRupiah(value);
-                                    }
-                                }
-                            }
-                        },
-                        plugins: {
-                            tooltip: {
-                                callbacks: {
-                                    label: function(tooltipItem) {
-                                        return formatRupiah(tooltipItem.raw);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error(`Error fetching data: ${status}, ${error}`);
-            }
-        });
-
-        return
-    }
+<script>
+    const default_month = <?= json_encode($month) ?>; 
+    const default_year = <?= json_encode($year) ?>;
 
     function getPreviousPeriod() {
         const today = new Date();
@@ -268,7 +213,7 @@ $year = isset($_GET['year']) && $_GET['year'] !== '' ? $_GET['year'] : $lastYear
             currency: 'IDR'
         }).format(angka);
     }
-    
+
     function fetchData(keterangan, id) {
         const periode = getPreviousPeriod(); // Dapatkan periode bulan sebelumnya
         $.ajax({
@@ -284,62 +229,68 @@ $year = isset($_GET['year']) && $_GET['year'] !== '' ? $_GET['year'] : $lastYear
                 const data = response.data || [];
                 let total = 0;
                 // Cari total berdasarkan keterangan yang sesuai
-                for(const item of data){
+                for (const item of data) {
                     if (item.keterangan === keterangan) {
                         total = item.total;
                     }
                 }
-                $(id).text(formatRupiah(total)); // Tampilkan hasil pada elemen #totalHpp
+                $(id).text(formatRupiah(total)); // Tampilkan hasil pada elemen yang sesuai
             },
             error: function(xhr, status, error) {
                 console.error(`Error: ${status}, ${error}`);
-                $(id).text("Gagal mengambil data: " + error); // Tampilkan pesan error
+                $(id).text("Gagal mengambil data: " + error); // Tampilkan pesan error jika gagal mengambil data
             }
         });
     }
 
     $(document).ready(function() {
-        function getData(){
-            const penggunaan = [
-            {
-                keterangan: "Total Pendapatan",
-                id: "#totalPendapatan"
-            },
-            {
-                keterangan: "Total HPP",
-                id: "#totalHpp"
-            },
-            {
-                keterangan: "Laba Rugi",
-                id: "#totalLabaRugi"
+        // Fungsi untuk mendapatkan data dari API
+        function getData() {
+            const penggunaan = [{
+                    keterangan: "Total Pendapatan",
+                    id: "#totalPendapatan"
+                },
+                {
+                    keterangan: "Total HPP",
+                    id: "#totalHpp"
+                },
+                {
+                    keterangan: "Laba Rugi",
+                    id: "#totalLabaRugi"
+                }
+            ];
+
+            // Loop untuk mengambil data dari API untuk masing-masing keterangan
+            for (const { keterangan, id } of penggunaan) {
+                fetchData(keterangan, id); // Panggil dengan keterangan yang sesuai
             }
-        ]
-
-        for (const { keterangan, id } of penggunaan) {
-            fetchData(keterangan, id); // Panggil dengan keterangan yang sama secara berkala
         }
-        
-        return
-        } 
-        
-        getData()
 
-        updateCharts(default_month, default_year)
+        // Ambil data pertama kali saat halaman dimuat
+        getData();
 
+        // Update chart berdasarkan nilai default bulan dan tahun
+        updateCharts(default_month, default_year);
+
+        // Set interval untuk mengambil data setiap 30 detik
         setInterval(function() {
-            getData()
-        }, 30000)
-    })
+            getData();
+        }, 30000); // 30 detik
+    });
 
-    document.getElementById("filterData").addEventListener("submit", function(event){
+    // Fungsi untuk menangani form filter data
+    document.getElementById("filterData").addEventListener("submit", function(event) {
         event.preventDefault();
         const formData = new FormData(event.target);
 
-        updateCharts(formData.get('month'), formData.get('year'));
+        const month = formData.get('month') || default_month; // Gunakan month default jika tidak ada input
+        const year = formData.get('year') || default_year; // Gunakan year default jika tidak ada input
 
-        return
-    })
+        // Update chart dengan bulan dan tahun yang dipilih atau default
+        updateCharts(month, year);
+    });
 </script>
+
 
 <script>
     const apiUrll = "http://localhost/ProjectTa/webservice/api/labarugidashboard.php";
@@ -420,3 +371,4 @@ $year = isset($_GET['year']) && $_GET['year'] !== '' ? $_GET['year'] : $lastYear
 <link rel="stylesheet" href="assets/libs/glightbox/css/glightbox.min.css">
 <script src="assets/libs/glightbox/js/glightbox.min.js"></script>
 <script src="assets/js/pages/lightbox.init.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

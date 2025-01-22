@@ -63,7 +63,7 @@ if ($selectedMonth && $selectedYear) {
                         </div>
                     </form>
 
-                    <table id="datatable" class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover text-center">
+                    <table id="datatable-custom" class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover text-center">
                         <thead class="table-light">
                             <tr>
                                 <th>Nomor</th>

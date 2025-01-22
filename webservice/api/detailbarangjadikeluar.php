@@ -4,7 +4,6 @@ include "../config.php";
 if (isset($_GET['id'])) {
     $id_barang_jadi = $_GET['id'];
     $hasil = mysqli_query($koneksi, "SELECT 
-
     tbjm.tanggal_pendapatan,
     p.nama_platform,
     dbjm.total_barang
@@ -18,8 +17,10 @@ JOIN
     master_platform p ON tbjm.id_platform = p.id_platform
 WHERE 
     mbj.id_barang_jadi = '$id_barang_jadi'
+    AND tbjm.status = 'Aktif'
 ORDER BY 
-    tbjm.tanggal_pendapatan ASC");
+    tbjm.tanggal_pendapatan ASC;
+");
 
     $jsonRespon = array();
     if (mysqli_num_rows($hasil) > 0) {

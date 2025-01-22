@@ -109,6 +109,11 @@
                         <li>
                             <a href="index.php?link=overhead" data-key="t-login">Overhead</a>
                         </li>
+                        <?php if ($_SESSION['level'] === "super admin") { ?>
+                            <li>
+                                <a href="index.php?link=user" data-key="t-login">User</a>
+                            </li>
+                        <?php } ?>
 
                     </ul>
                 </li>

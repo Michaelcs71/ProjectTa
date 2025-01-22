@@ -1,4 +1,8 @@
 <?php
+// Memastikan sesi hanya dimulai sekali
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $configPath = $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/webservice/config.php";
 if (file_exists($configPath)) {
@@ -7,31 +11,37 @@ if (file_exists($configPath)) {
     die("Config file not found: " . $configPath);
 }
 
-$user = @$_POST['username'];
-$pass = @$_POST['password'];
-$login = @$_POST['login'];
+if (isset($_POST['login'])) {
+    $user = mysqli_real_escape_string($koneksi, $_POST['username']);
+    $pass = mysqli_real_escape_string($koneksi, $_POST['password']);
 
-if (isset($login)) {
-    $sql = mysqli_query($koneksi, "SELECT * FROM user WHERE username = '$user' AND pass = '$pass'") or die(mysqli_error($koneksi));
-    $data = mysqli_fetch_array($sql);
+    $sql = mysqli_query($koneksi, "SELECT * FROM user WHERE username = '$user' AND pass = '$pass' AND status = 'Aktif'") or die(mysqli_error($koneksi));
+    $data = mysqli_fetch_assoc($sql);
     $cek = mysqli_num_rows($sql);
 
     if ($cek > 0) {
-        if ($data['level'] == "admin") {
-            $_SESSION['admin'] = $data['id'];
-            header("Location: index.php?link=dashboard");
-        } elseif ($data['level'] == "manager") {
-            $_SESSION['manager'] = $data['id'];
-            header("Location: index.php?link=dashboard");
-        } elseif ($data['level'] == "accounting") {
-            $_SESSION['accounting'] = $data['id'];
-            header("Location: index.php?link=dashboard");
+        $_SESSION['id_user'] = $data['id_user'];
+        $_SESSION['username'] = $data['username'];
+        $_SESSION['level'] = $data['level'];
+
+        switch ($data['level']) {
+            case "super admin":
+                header("Location: index.php?link=dashboard");
+                break;
+            case "admin":
+                header("Location: index.php?link=dashboard");
+                break;
+            default:
+                echo "<script>alert('Level akun tidak dikenal.');window.location.href='index.php?link=login';</script>";
+                break;
         }
     } else {
-        echo "<script type='text/javascript'>alert('Username / password salah');window.location.href='index.php?link=login';</script>";
+        echo "<script>alert('Username atau password salah.');window.location.href='index.php?link=login';</script>";
     }
 }
 ?>
+
+
 
 <div class="auth-page">
     <div class="container-fluid p-0">

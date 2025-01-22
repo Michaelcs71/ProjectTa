@@ -1,6 +1,8 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/webservice/config.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/lib/function.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/pages/cetakdetailhpp.php";
+
 
 // Get selected month and year from request
 $selectedMonth = isset($_POST['month']) ? $_POST['month'] : '';
@@ -62,7 +64,7 @@ if ($selectedMonth && $selectedYear) {
                             </form>
 
 
-                            <table id="tablecustom" class="table table-bordered nowrap w-100 table-striped table-hover">
+                            <table id="table" class="table table-bordered nowrap w-100 table-striped table-hover">
                                 <thead class="table-light">
                                     <tr>
                                         <th>Nomor</th>
@@ -108,6 +110,8 @@ if ($selectedMonth && $selectedYear) {
                                     ?>
                                 </tbody>
                             </table>
+                            <!-- <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#cetakModal">Cetak / Download PDF</button> -->
+
                         </div>
                     </div>
                 </div>
@@ -115,3 +119,17 @@ if ($selectedMonth && $selectedYear) {
         </div>
     </div>
 </div>
+
+<script>
+    function printReport() {
+        var printContents = document.getElementById("printArea").innerHTML;
+        var originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+
+        // Pastikan halaman direfresh setelah cetak untuk menghindari masalah rendering
+        window.location.reload();
+    }
+</script>

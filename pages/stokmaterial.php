@@ -34,16 +34,21 @@ if ($data === null) {
                             <h4 class="card-title font-size-18">Data Stok Bahan Material</h4>
                         </div>
                         <div class="card-body">
-                            <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal"
-                                data-bs-target="#insertModalMasuk">Stok Masuk</button>
+                            <?php if ($_SESSION['level'] === "super admin") { ?>
+                                <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal"
+                                    data-bs-target="#insertModalMasuk">Stok Masuk</button>
+                            <?php } ?>
+
                             <button type="button" class="btn btn-danger mb-sm-2" data-bs-toggle="modal"
                                 data-bs-target="#insertModalKeluar">Stok Keluar</button>
-                            <button type="button" class="btn btn-warning mb-sm-2" data-bs-toggle="modal"
-                                data-bs-target="#updateModalMaterialMasuk">Update Stok Masuk</button>
+                            <?php if ($_SESSION['level'] === "super admin") { ?>
+                                <button type="button" class="btn btn-warning mb-sm-2" data-bs-toggle="modal"
+                                    data-bs-target="#updateModalMaterialMasuk">Update Stok Masuk</button>
+                            <?php } ?>
                             <button type="button" class="btn btn-secondary mb-sm-2" data-bs-toggle="modal"
                                 data-bs-target="#updateModalMaterialKeluar">Update Stok Keluar</button>
 
-                            <table id="datatable-buttons"
+                            <table id="datatable"
                                 class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover text-center">
                                 <thead class="table-light">
                                     <tr>

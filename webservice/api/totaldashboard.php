@@ -5,13 +5,12 @@ include "../config.php";
 $periode = isset($_GET['periode']) ? $_GET['periode'] : date('Y-m');
 
 // Query SQL
-$sql = "
-WITH bahan_baku AS (
+$sql = "WITH bahan_baku AS (
     SELECT 
         DATE_FORMAT(tpm.tanggal_pengambilan, '%Y-%m') AS periode,
         COALESCE(SUM(dpm.jumlah * (
             SELECT 
-                SUM(dpbm.harga_satuan * dpbm.jumlah) / NULLIF(SUM(dpbm.jumlah), 0)
+                COALESCE(SUM(dpbm.harga_satuan * dpbm.jumlah) / NULLIF(SUM(dpbm.jumlah), 0), 0)
             FROM detail_pembelian_bahan_material dpbm
             WHERE dpbm.id_bahan_material = dpm.id_bahan_material
         )), 0) AS total_bahan_material
@@ -22,22 +21,24 @@ WITH bahan_baku AS (
         ON tpm.id_penggunaan_material = dpm.id_penggunaan_material
     WHERE 
         DATE_FORMAT(tpm.tanggal_pengambilan, '%Y-%m') = '$periode'
+        AND tpm.status = 'Aktif'
     GROUP BY 
         DATE_FORMAT(tpm.tanggal_pengambilan, '%Y-%m')
 ),
 tenaga_kerja AS (
     SELECT 
-        DATE_FORMAT(po.tanggal, '%Y-%m') AS periode,
-        COALESCE(SUM(tj.subtotal_upah), 0) AS total_upah
+        DATE_FORMAT(tbm.tanggal, '%Y-%m') AS periode,
+        COALESCE(SUM(dbdm.subtotal_upah), 0) AS total_upah
     FROM 
-        transaksi_pengeluaran_overhead po
+        transaksi_barang_jadi_masuk tbm
     LEFT JOIN 
-        detail_barang_jadi_masuk tj 
-        ON po.id_pengeluaran_overhead = tj.id_barang_masuk
+        detail_barang_jadi_masuk dbdm 
+        ON tbm.id_barang_masuk = dbdm.id_barang_masuk
     WHERE 
-        DATE_FORMAT(po.tanggal, '%Y-%m') = '$periode'
+        DATE_FORMAT(tbm.tanggal, '%Y-%m') = '$periode'
+        AND tbm.status = 'Aktif'
     GROUP BY 
-        DATE_FORMAT(po.tanggal, '%Y-%m')
+        DATE_FORMAT(tbm.tanggal, '%Y-%m')
 ),
 overhead AS (
     WITH overhead_per_bulan AS (
@@ -49,6 +50,8 @@ overhead AS (
             transaksi_pengeluaran po
         LEFT JOIN 
             detail_pengeluaran oh ON po.id_pengeluaran = oh.id_pengeluaran
+        WHERE 
+            po.status = 'Aktif'
     ),
     periode_biaya AS (
         SELECT
@@ -89,6 +92,7 @@ overhead AS (
             detail_pengeluaran_overhead oh ON po.id_pengeluaran_overhead = oh.id_pengeluaran_overhead
         WHERE 
             DATE_FORMAT(po.tanggal, '%Y-%m') = '$periode'
+            AND po.status = 'Aktif'
         GROUP BY 
             DATE_FORMAT(po.tanggal, '%Y-%m')
     )
@@ -99,17 +103,16 @@ overhead AS (
         total_biaya_overhead
     GROUP BY
         periode
-    ORDER BY
-        periode
 ),
 pendapatan AS (
     SELECT 
         DATE_FORMAT(tp.tanggal_pendapatan, '%Y-%m') AS periode,
-        COALESCE(SUM(total_pendapatan), 0) AS total_pendapatan
+        COALESCE(SUM(tp.total_pendapatan), 0) AS total_pendapatan
     FROM 
         transaksi_pendapatan tp
     WHERE 
         DATE_FORMAT(tp.tanggal_pendapatan, '%Y-%m') = '$periode'
+        AND tp.status = 'Aktif'
     GROUP BY 
         DATE_FORMAT(tp.tanggal_pendapatan, '%Y-%m')
 ),
@@ -180,7 +183,8 @@ FROM hpp
 WHERE 
     periode = '$periode'
 ORDER BY 
-    FIELD(keterangan, 'Total Pendapatan', 'Biaya Bahan Baku', 'Biaya Tenaga Kerja', 'Biaya Overhead', 'Total HPP', 'Laba Rugi');
+    FIELD(keterangan, 'Total Pendapatan', 'Biaya Bahan Baku', 'Biaya Tenaga Kerja', 'Biaya Overhead', 'Total HPP', 'Laba Rugi')
+
 ";
 
 $hasil = mysqli_query($koneksi, $sql);
@@ -205,3 +209,4 @@ $response = array(
 // Set header JSON dan kirimkan response
 header('Content-Type: application/json');
 echo json_encode($response);
+?>

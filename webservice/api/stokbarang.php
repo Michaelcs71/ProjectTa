@@ -45,15 +45,18 @@ LEFT JOIN
 LEFT JOIN 
     (
         SELECT 
-            id_barang_jadi, 
-            SUM(target_jumlah) AS target_jumlah
+            tpbm.id_barang_jadi, 
+            SUM(tpbm.target_jumlah) AS target_jumlah
         FROM 
-            transaksi_penggunaan_bahan_material
+            transaksi_penggunaan_bahan_material tpbm
+        WHERE 
+            tpbm.status = 'Aktif'
         GROUP BY 
-            id_barang_jadi
+            tpbm.id_barang_jadi
     ) AS proses ON mbj.id_barang_jadi = proses.id_barang_jadi
 ORDER BY 
-    mbj.id_barang_jadi ASC");
+    mbj.id_barang_jadi ASC;
+");
 
 $jsonRespon = array();
 if (mysqli_num_rows($hasil) > 0) {

@@ -1,8 +1,7 @@
 <?php
-include "../config.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/ProjectTa/webservice/config.php";
 
-$hasil = mysqli_query($koneksi, "
-WITH bahan_baku_per_produk AS (
+$hasil = mysqli_query($koneksi, "WITH bahan_baku_per_produk AS (
     SELECT 
         tpm.id_barang_jadi,
         dpm.id_bahan_material,
@@ -12,19 +11,18 @@ WITH bahan_baku_per_produk AS (
                 SUM(dpbm.harga_satuan * dpbm.jumlah) / SUM(dpbm.jumlah)
             FROM detail_pembelian_bahan_material dpbm
             WHERE dpbm.id_bahan_material = dpm.id_bahan_material
-        ) AS harga_rata2,
-        DATE_FORMAT(tpm.tanggal_pengambilan, '%Y-%m') AS periode  -- Menambahkan periode berdasarkan tanggal transaksi
+        ) AS harga_rata2
     FROM transaksi_penggunaan_bahan_material tpm
     LEFT JOIN detail_penggunaan_bahan_material dpm
         ON tpm.id_penggunaan_material = dpm.id_penggunaan_material
+    WHERE tpm.status = 'Aktif'
 ),
 total_bahan_per_produk AS (
     SELECT 
         bb.id_barang_jadi,
-        bb.periode,  -- Menambahkan periode ke GROUP BY
         COALESCE(SUM(bb.jumlah_bahan * bb.harga_rata2), 0) AS total_bahan_baku
     FROM bahan_baku_per_produk bb
-    GROUP BY bb.id_barang_jadi, bb.periode  -- Group by berdasarkan periode dan id_barang_jadi
+    GROUP BY bb.id_barang_jadi
 ),
 total_overhead_bulanan AS (
     WITH overhead_per_bulan AS (
@@ -36,6 +34,7 @@ total_overhead_bulanan AS (
             transaksi_pengeluaran tp
         LEFT JOIN 
             detail_pengeluaran dp ON tp.id_pengeluaran = dp.id_pengeluaran
+        WHERE tp.status = 'Aktif'
     ),
     periode_biaya AS (
         SELECT
@@ -74,6 +73,7 @@ total_overhead_bulanan AS (
             transaksi_pengeluaran_overhead tp
         LEFT JOIN 
             detail_pengeluaran_overhead dp ON tp.id_pengeluaran_overhead = dp.id_pengeluaran_overhead
+        WHERE tp.status = 'Aktif'
         GROUP BY 
             DATE_FORMAT(tp.tanggal, '%Y-%m')
     )
@@ -93,6 +93,7 @@ total_upah_bulanan AS (
     FROM detail_barang_jadi_masuk dj
     LEFT JOIN transaksi_barang_jadi_masuk tbm
         ON dj.id_barang_masuk = tbm.id_barang_masuk
+    WHERE tbm.status = 'Aktif'
     GROUP BY DATE_FORMAT(tbm.tanggal, '%Y-%m'), dj.id_barang_jadi
 ),
 produksi_bulanan AS (
@@ -103,6 +104,7 @@ produksi_bulanan AS (
     FROM detail_barang_jadi_masuk dj
     LEFT JOIN transaksi_barang_jadi_masuk tbm
         ON dj.id_barang_masuk = tbm.id_barang_masuk
+    WHERE tbm.status = 'Aktif'
     GROUP BY DATE_FORMAT(tbm.tanggal, '%Y-%m'), dj.id_barang_jadi
 ),
 hpp_per_produk AS (
@@ -125,7 +127,7 @@ hpp_per_produk AS (
         ) / NULLIF(p.jumlah_produksi, 0) AS hpp_per_unit
     FROM produksi_bulanan p
     LEFT JOIN total_bahan_per_produk tbp
-        ON p.id_barang_jadi = tbp.id_barang_jadi AND p.periode = tbp.periode  -- Menambahkan periode untuk memastikan data sesuai
+        ON p.id_barang_jadi = tbp.id_barang_jadi
     LEFT JOIN total_upah_bulanan tu
         ON p.periode = tu.periode AND p.id_barang_jadi = tu.id_barang_jadi
     LEFT JOIN total_overhead_bulanan toh
@@ -134,7 +136,7 @@ hpp_per_produk AS (
         ON p.id_barang_jadi = mbj.id_barang_jadi
 )
 SELECT 
-periode,
+    periode,
     id_barang_jadi,
     nama_barang,
     jumlah_produksi,
@@ -144,16 +146,18 @@ periode,
     hpp_per_unit
 FROM hpp_per_produk
 ORDER BY periode, id_barang_jadi;
-
-
 ");
 
+
 $jsonRespon = array();
-if (mysqli_num_rows($hasil) > 0) {
-    while ($row = mysqli_fetch_assoc($hasil)) {
-        $jsonRespon[] = $row;
+
+if ($hasil) {
+    if (mysqli_num_rows($hasil) > 0) {
+        while ($row = mysqli_fetch_assoc($hasil)) {
+            $jsonRespon[] = $row;
+        }
     }
+    echo json_encode($jsonRespon, JSON_PRETTY_PRINT);
+} else {
+    echo json_encode(["error" => mysqli_error($koneksi)], JSON_PRETTY_PRINT);
 }
-
-
-echo json_encode($jsonRespon, JSON_PRETTY_PRINT);
